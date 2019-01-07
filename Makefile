@@ -1,4 +1,4 @@
-linux:
+unix:
 	gcc -std="c99" -Wall -pedantic friedo.c -o friedolin -lm -lSDL2main -lSDL2
 
 win:
