@@ -8,7 +8,7 @@
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 480
 #define SCREEN_SCALE 1
-#define SCREEN_NAME "Super Friedolin"
+#define SCREEN_NAME "Super Friedolin Go Pikachu(TM)"
 
 // -------------------------------------------
 void game_init(void);
