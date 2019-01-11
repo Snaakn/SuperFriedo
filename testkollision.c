@@ -144,10 +144,10 @@ int main(void)
     Uint32 render_flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
     SDL_Renderer* rend = SDL_CreateRenderer(win, -1, render_flags);
 
-   bodenSurface = IMG_Load("resources/boden.png");
+   bodenSurface = IMG_Load("Images/boden.png");
    gameState.boden = SDL_CreateTextureFromSurface(rend, bodenSurface);
    SDL_FreeSurface(bodenSurface);
-   gumbaSurface = IMG_Load("resources/gumba.png");
+   gumbaSurface = IMG_Load("Images/gumba.png");
    gameState.gumba = SDL_CreateTextureFromSurface(rend,gumbaSurface);
    SDL_FreeSurface(gumbaSurface);
 
@@ -159,7 +159,7 @@ int main(void)
     if(processEvent(win, &gameState) == 1)
     done =1;
 
-    collisionDetect(&gameState);
+    //collisionDetect(&gameState);
 
      doRender(rend, &gameState);
      SDL_Delay(1000/60);
