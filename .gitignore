@@ -1,6 +1,4 @@
 #ignore executables
-friedolin
-friedolin.exe
 .DS_Store
 *.gch
 game

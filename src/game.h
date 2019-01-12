@@ -2,8 +2,6 @@
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_image.h>
 
-
-
 typedef struct
 {
   int x,y;

@@ -1,5 +1,9 @@
 #include "stdio.h"
 #include "gamewindow.h"
+#include "player.h"
+
+
+
 
 //-------------------------------------------------------------------------
 
@@ -46,6 +50,16 @@ int main(void)
     SDL_Surface *bodenSurface = NULL;
     SDL_Surface *gumbaSurface = NULL;
 
+//--------------- Philipps player struktur:----------------------
+// the structure contains function pointers to update function or later walk and jump
+// create an instance of type player: {xPos, yPos, update-function-to-point-to}
+    struct Player player = {0, 0, player_update};
+    player.update(&player); // update changes player values
+    printf("Player coords: %d,%d\n", player.xPos, player.yPos);
+//---------------------------------------------------------------
+
+
+
 
     SDL_Window* win = SDL_CreateWindow(SCREEN_NAME,
                                        SDL_WINDOWPOS_CENTERED,
@@ -61,9 +75,9 @@ int main(void)
    bodenSurface = IMG_Load("Images/boden.png");
    gameState.boden = SDL_CreateTextureFromSurface(rend, bodenSurface);
    SDL_FreeSurface(bodenSurface);
-   gumbaSurface = IMG_Load("Images/gumba.png");
-   gameState.gumba = SDL_CreateTextureFromSurface(rend,gumbaSurface);
-   SDL_FreeSurface(gumbaSurface);
+   //gumbaSurface = IMG_Load("Images/gumba.png");
+   //gameState.gumba = SDL_CreateTextureFromSurface(rend,gumbaSurface);
+   //SDL_FreeSurface(gumbaSurface);
 
 
 
