@@ -1,3 +1,6 @@
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_timer.h>
+#include <SDL2/SDL_image.h>
 #include "game.h"
 
 #define SCREEN_NAME "Super Friedolin Go Pikachu(TM)"
@@ -7,4 +10,4 @@
 
 // Function prototypes
 int processEvent(SDL_Window *win, GameState *game);
-void doRender(SDL_Renderer *rend, GameState *game);
+void doRender(SDL_Renderer *rend, int x, int y, SDL_Texture *tex);

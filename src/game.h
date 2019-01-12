@@ -1,7 +1,3 @@
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_timer.h>
-#include <SDL2/SDL_image.h>
-
 typedef struct
 {
   int x,y;
@@ -16,9 +12,9 @@ typedef struct{
 
 typedef struct
 {
-  Gumba a;
+  int done;
   Block block[100];
-  SDL_Texture *boden;
-  SDL_Texture *gumba;
+  // SDL_Texture *boden;
+  // SDL_Texture *gumba;
 
 }GameState;

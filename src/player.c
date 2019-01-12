@@ -2,7 +2,12 @@
 #include "player.h"
 
 void player_update(struct Player *self){
-  //TODO add gravity
-  self->xPos = 2;
-  self->yPos = 3;
+int speed = self->speed;
+if (self->xPos >=600)
+  self->speed = -3;
+if (self->xPos <= 1)
+  self->speed = 3;
+
+  self->xPos += speed;
+  self->yPos = 48;
 }
