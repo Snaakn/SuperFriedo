@@ -2,3 +2,6 @@
 friedolin
 friedolin.exe
 .DS_Store
+*.gch
+game
+game.exe
