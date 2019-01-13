@@ -9,5 +9,12 @@ if (self->xPos <= 1)
   self->speed = 3;
 
   self->xPos += speed;
-  self->yPos = 48;
+  if (self->yPos > 48)
+    self->yPos -= 5;
+  //self->yPos = 48;
+}
+
+void player_jump(struct Player *self){
+  self->yPos += 96;
+
 }

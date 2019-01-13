@@ -2,6 +2,43 @@
 #include "player.h"
 #include "time.h"
 
+int processEvent(SDL_Window *win, struct Player *p, GameState *game)
+{
+  SDL_Event event;
+
+
+  while(SDL_PollEvent(&event))
+  {
+    switch (event.type){
+      case SDL_QUIT:
+        game->done = 1;
+        break;
+    }
+
+    // Get input
+
+     const Uint8 *state = SDL_GetKeyboardState(NULL);
+     if(state[SDL_SCANCODE_SPACE]){
+       p->jump(p);
+     }
+
+     // if(state[SDL_SCANCODE_A]){
+     //   game->a.x--;
+     // }
+     // if(state[SDL_SCANCODE_D]){
+     //   game->a.x++;
+     // }
+     // if(state[SDL_SCANCODE_W]){
+     //   game-> a.y--;
+     // }
+     // if(state[SDL_SCANCODE_S]){
+     //   game->a.y++;
+     // }
+
+  }
+
+    return game->done;
+}
 
 
 
@@ -61,13 +98,13 @@ int main(void)
 //--------------- Philipps player struktur:----------------------
 // the structure contains function pointers to update function or later walk and jump
 // create an instance of type player: {xPos, yPos, update-function-to-point-to}
-    struct Player player = {0, 0, 3, player_update, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
-    //SDL_FreeSurface(&player.texture);
-    player.update(&player); // update changes player values
-    printf("Player coords: %d,%d\n", player.xPos, player.yPos); //prints "Player coords: 2,3" not 0,0 since update changed the values
+  struct Player player = {300, 144, 3, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
+  //SDL_FreeSurface(&player.texture);
+  player.update(&player); // update changes player values
+  printf("Player coords: %d,%d\n", player.xPos, player.yPos); //prints "Player coords: 2,3" not 0,0 since update changed the values
 //---------------------------------------------------------------
 
-struct Player boden = {96,96,0, player_update, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/boden.png"))};
+  struct Player boden = {96,96,0, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/boden.png"))};
 
 
    // bodenSurface = IMG_Load("Images/boden.png");
@@ -82,7 +119,7 @@ struct Player boden = {96,96,0, player_update, SDL_CreateTextureFromSurface(rend
    double deltatime;
    while(!game.done){
     last = SDL_GetPerformanceCounter();
-    if(processEvent(win, &game) == 1)
+    if(processEvent(win, &player, &game) == 1)
     game.done = 1;
     // TODO iterate over level array and choose textures from chars in array
 

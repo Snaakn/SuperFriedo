@@ -9,5 +9,4 @@
 #define SCREEN_SCALE 0
 
 // Function prototypes
-int processEvent(SDL_Window *win, GameState *game);
 void doRender(SDL_Renderer *rend, int x, int y, SDL_Texture *tex);
