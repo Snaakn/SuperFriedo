@@ -1,38 +1,6 @@
 #include "gamewindow.h"
 
-int processEvent(SDL_Window *win, GameState *game)
-{
-  SDL_Event event;
 
-
-  while(SDL_PollEvent(&event))
-  {
-    switch (event.type){
-      case SDL_QUIT:
-        game->done = 1;
-        break;
-    }
-
-    // Get input
-
-     const Uint8 *state = SDL_GetKeyboardState(NULL);
-     // if(state[SDL_SCANCODE_A]){
-     //   game->a.x--;
-     // }
-     // if(state[SDL_SCANCODE_D]){
-     //   game->a.x++;
-     // }
-     // if(state[SDL_SCANCODE_W]){
-     //   game-> a.y--;
-     // }
-     // if(state[SDL_SCANCODE_S]){
-     //   game->a.y++;
-     // }
-
-  }
-
-    return game->done;
-}
 
 void doRender(SDL_Renderer *rend, int x, int y, SDL_Texture *tex)
 {
