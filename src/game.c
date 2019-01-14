@@ -2,8 +2,9 @@
 #include "player.h"
 #include "time.h"
 
-int processEvent(SDL_Window *win, struct Player *p, GameState *game)
+int processEvent(SDL_Window *win, struct Player *self, GameState *game)
 {
+  self->yPos += self->dPos;
   SDL_Event event;
 
 
@@ -19,21 +20,17 @@ int processEvent(SDL_Window *win, struct Player *p, GameState *game)
 
      const Uint8 *state = SDL_GetKeyboardState(NULL);
      if(state[SDL_SCANCODE_SPACE]){
-       p->jump(p);
+       if(self->dPos < 10)
+       self->dPos = 20;
      }
 
-     // if(state[SDL_SCANCODE_A]){
-     //   game->a.x--;
-     // }
-     // if(state[SDL_SCANCODE_D]){
-     //   game->a.x++;
-     // }
-     // if(state[SDL_SCANCODE_W]){
-     //   game-> a.y--;
-     // }
-     // if(state[SDL_SCANCODE_S]){
-     //   game->a.y++;
-     // }
+      if(state[SDL_SCANCODE_A]){
+            self-> xPos -=5;
+      }
+      if(state[SDL_SCANCODE_D]){
+        self->xPos +=5;
+      }
+
 
   }
 
@@ -99,7 +96,7 @@ int main(void)
 //--------------- Philipps player struktur:----------------------
 // the structure contains function pointers to update function or later walk and jump
 // create an instance of type player: {xPos, yPos, update-function-to-point-to}
-  struct Player player = {300, 144, 3, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
+  struct Player player = {300, 144,0, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
 // possible player 2
 // struct Player fred = {300, 144, -3, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
 
