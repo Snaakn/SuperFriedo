@@ -2,8 +2,9 @@
 #include "player.h"
 #include "time.h"
 
-int processEvent(SDL_Window *win, struct Player *p, GameState *game)
+int processEvent(SDL_Window *win, struct Player *self, GameState *game)
 {
+  self->yPos += self->dPos;
   SDL_Event event;
 
 
@@ -19,15 +20,15 @@ int processEvent(SDL_Window *win, struct Player *p, GameState *game)
 
      const Uint8 *state = SDL_GetKeyboardState(NULL);
      if(state[SDL_SCANCODE_SPACE]){
-       if(p->dY == -7)
-          p->jump(p);
+       if(self->dPos < 10)
+       self->dPos = 20;
      }
 
       if(state[SDL_SCANCODE_A]){
-            p->xPos -=5;
+            self-> xPos -=5;
       }
       if(state[SDL_SCANCODE_D]){
-        p->xPos +=5;
+        self->xPos +=5;
       }
 
 
@@ -40,6 +41,38 @@ int processEvent(SDL_Window *win, struct Player *p, GameState *game)
 
 //-------------------------------------------------------------------------
 
+ // void collisionDetect (GameState *game)
+ // {
+ //   for (int i  = 0; i < 15; i++) {
+ //     float mw = 40, mh = 40;
+ //     float mx = game->a.x;
+ //     float my = game->a.y;
+ //     float bx = game->block[i].x, by = game->block[i].y, bw = game->block[i].h, bh = game ->block[i].w;
+ //    if(my+mh > by && my < by+bh)
+ //    {
+ //      if (mx < bx+bw && mx+mw > bx+bw)
+ //      {
+ //        game->a.x = bx+bw;
+ //        mx = bx+bw;
+ //      }else if (mx +mw > bx && mx < bx)
+ //      {
+ //        game -> a.x = bx-mw;
+ //        mx = bx-mw;
+ //      }
+ //    }
+ //    if(mx+mw > bx && mx<bx+bw){
+ //      if(my < by+bh && my > by){
+ //        game->a.y = by+bh;
+ //      }
+ //
+ //    }if (my+mh > by && my < by)
+ //    {
+ //      game->a.y = by-mh;
+ //
+ //    }
+ //  }
+ //
+ // }
 
 
 
@@ -63,7 +96,7 @@ int main(void)
 //--------------- Philipps player struktur:----------------------
 // the structure contains function pointers to update function or later walk and jump
 // create an instance of type player: {xPos, yPos, update-function-to-point-to}
-  struct Player player = {300, 144,0, 0,player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
+  struct Player player = {300, 144,0, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
 // possible player 2
 // struct Player fred = {300, 144, -3, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
 
@@ -85,7 +118,7 @@ int main(void)
 //      struct Enemy *enems = malloc(lvl->enem_count*sizeof(struct Enemy));
 
 // TODO make a Block struct I will use player struct for now
-  struct Player boden = {96,96,0,0,player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/boden.png"))};
+  struct Player boden = {96,96,0, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/boden.png"))};
 
 
 
