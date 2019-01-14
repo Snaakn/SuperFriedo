@@ -2,6 +2,7 @@
 #include "player.h"
 #include "time.h"
 
+
 int processEvent(SDL_Window *win, struct Player *self, GameState *game)
 {
   self->yPos += self->dY;
