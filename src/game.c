@@ -13,6 +13,14 @@ int processEvent(SDL_Window *win, struct Player *p, GameState *game)
       case SDL_QUIT:
         game->done = 1;
         break;
+      case SDL_KEYDOWN:
+        switch (event.key.keysym.sym) {
+          case SDLK_ESCAPE:
+          game->done = 1;
+          break;
+
+        }
+      break;
     }
 
     // Get input
@@ -21,6 +29,7 @@ int processEvent(SDL_Window *win, struct Player *p, GameState *game)
      if(state[SDL_SCANCODE_SPACE]){
        p->jump(p);
      }
+
 
      // if(state[SDL_SCANCODE_A]){
      //   game->a.x--;
@@ -39,44 +48,6 @@ int processEvent(SDL_Window *win, struct Player *p, GameState *game)
 
     return game->done;
 }
-
-
-
-//-------------------------------------------------------------------------
-
- // void collisionDetect (GameState *game)
- // {
- //   for (int i  = 0; i < 15; i++) {
- //     float mw = 40, mh = 40;
- //     float mx = game->a.x;
- //     float my = game->a.y;
- //     float bx = game->block[i].x, by = game->block[i].y, bw = game->block[i].h, bh = game ->block[i].w;
- //    if(my+mh > by && my < by+bh)
- //    {
- //      if (mx < bx+bw && mx+mw > bx+bw)
- //      {
- //        game->a.x = bx+bw;
- //        mx = bx+bw;
- //      }else if (mx +mw > bx && mx < bx)
- //      {
- //        game -> a.x = bx-mw;
- //        mx = bx-mw;
- //      }
- //    }
- //    if(mx+mw > bx && mx<bx+bw){
- //      if(my < by+bh && my > by){
- //        game->a.y = by+bh;
- //      }
- //
- //    }if (my+mh > by && my < by)
- //    {
- //      game->a.y = by-mh;
- //
- //    }
- //  }
- //
- // }
-
 
 
 //---------------------------MAIN-------------------------------------------
