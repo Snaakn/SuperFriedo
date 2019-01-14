@@ -4,7 +4,8 @@
 struct Player{
   int xPos;
   int yPos;
-  int dPos;
+  int dY;
+  int dY;
   void (*update)(struct Player *);
   void (*jump)(struct Player *);
 
