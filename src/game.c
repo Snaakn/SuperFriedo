@@ -16,46 +16,39 @@ int processEvent(SDL_Window *win, struct Player *self, GameState *game)
       case SDL_QUIT:
         game->done = 1;
         break;
-    }
+
 
     // Get input
+}
 
      const Uint8 *state = SDL_GetKeyboardState(NULL);
      if(state[SDL_SCANCODE_SPACE]){
        if(self->yPos < 110)
        self->dY =20;
+
      }
 
       if(state[SDL_SCANCODE_A]){
             self-> dX -=0.5;
-            if (self->dX > -3){
-              self->dX = -3;
-            }else if(self->dX > 3){
-              self->dX = 3;
-            }else {
-              self->dX *= 0.8;
-              if(abs(self->dX) < 0.1){
-                self->dX = 0;
-              }
-
+            if (self->dX < -2){
+              self->dX = -2;
             }
 
-
-
-      }
+    }
       else if(state[SDL_SCANCODE_D]){
-        self-> dX +=1;
-      }else if(self->dX > 3){
-        self->dX = 3;
-      }else {
-        self->dX *= 0.8;
-        if(abs(self->dX) < 0.1){
-          self->dX = 0;
-        }
+        self-> dX +=0.5;
+        if (self->dX > 2) {
+           self ->dX = 2;
+        }else {
+          self->dX *=0.8;
+
+          if (fabs(self->dX)< 0.1)
+          self -> dX = 0;
 
       }
-      }
 
+}
+}
 
 
 
