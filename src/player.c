@@ -13,8 +13,8 @@ if (self->xPos <= 1)
 
 
   if (self->yPos > 48)
-    self->dPos -= 2;
-  //self->yPos = 48;
+    self->dY -= 2;
+
 }
 
 void player_jump(struct Player *self){

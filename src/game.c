@@ -4,7 +4,8 @@
 
 int processEvent(SDL_Window *win, struct Player *self, GameState *game)
 {
-  self->yPos += self->dPos;
+  self->yPos += self->dY;
+  self->xPos += self->dX;
   SDL_Event event;
 
 
@@ -20,19 +21,42 @@ int processEvent(SDL_Window *win, struct Player *self, GameState *game)
 
      const Uint8 *state = SDL_GetKeyboardState(NULL);
      if(state[SDL_SCANCODE_SPACE]){
-       if(self->dPos < 10)
-       self->dPos = 20;
+       if(self->yPos < 110)
+       self->dY =20;
      }
 
       if(state[SDL_SCANCODE_A]){
-            self-> xPos -=5;
+            self-> dX -=0.5;
+            if (self->dX > -3){
+              self->dX = -3;
+            }else if(self->dX > 3){
+              self->dX = 3;
+            }else {
+              self->dX *= 0.8;
+              if(abs(self->dX) < 0.1){
+                self->dX = 0;
+              }
+
+            }
+
+
+
       }
-      if(state[SDL_SCANCODE_D]){
-        self->xPos +=5;
+      else if(state[SDL_SCANCODE_D]){
+        self-> dX +=1;
+      }else if(self->dX > 3){
+        self->dX = 3;
+      }else {
+        self->dX *= 0.8;
+        if(abs(self->dX) < 0.1){
+          self->dX = 0;
+        }
+
+      }
       }
 
 
-  }
+
 
     return game->done;
 }
@@ -96,7 +120,7 @@ int main(void)
 //--------------- Philipps player struktur:----------------------
 // the structure contains function pointers to update function or later walk and jump
 // create an instance of type player: {xPos, yPos, update-function-to-point-to}
-  struct Player player = {300, 144,0, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
+  struct Player player = {300, 144,0,0, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
 // possible player 2
 // struct Player fred = {300, 144, -3, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
 
@@ -118,7 +142,7 @@ int main(void)
 //      struct Enemy *enems = malloc(lvl->enem_count*sizeof(struct Enemy));
 
 // TODO make a Block struct I will use player struct for now
-  struct Player boden = {96,96,0, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/boden.png"))};
+  struct Player boden = {96,96,0,0, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/boden.png"))};
 
 
 
