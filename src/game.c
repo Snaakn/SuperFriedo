@@ -1,4 +1,4 @@
-#include "stdio.h"
+#include "level.h"
 #include "player.h"
 #include "time.h"
 
@@ -82,56 +82,80 @@ int processEvent(SDL_Window *win, struct Player *p, GameState *game)
 //---------------------------MAIN-------------------------------------------
 int main(void)
 {
-    GameState game;
-    game.done = 0;
-    SDL_Surface *bodenSurface = NULL;
-    SDL_Surface *gumbaSurface = NULL;
+  GameState game;
+  game.done = 0;
+  SDL_Surface *bodenSurface = NULL;
+  SDL_Surface *gumbaSurface = NULL;
 
-    SDL_Window* win = SDL_CreateWindow(SCREEN_NAME,
-      SDL_WINDOWPOS_CENTERED,
-      SDL_WINDOWPOS_CENTERED,
-      SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_SCALE);
-    // create a renderer, which sets up the graphics hardware
-    Uint32 render_flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
-    SDL_Renderer* rend = SDL_CreateRenderer(win, -1, render_flags);
+  SDL_Window* win = SDL_CreateWindow(SCREEN_NAME,
+    SDL_WINDOWPOS_CENTERED,
+    SDL_WINDOWPOS_CENTERED,
+    SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_SCALE);
+
+// create a renderer, which sets up the graphics hardware
+  Uint32 render_flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
+  SDL_Renderer* rend = SDL_CreateRenderer(win, -1, render_flags);
 
 //--------------- Philipps player struktur:----------------------
 // the structure contains function pointers to update function or later walk and jump
 // create an instance of type player: {xPos, yPos, update-function-to-point-to}
   struct Player player = {300, 144, 3, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
-  //SDL_FreeSurface(&player.texture);
-  player.update(&player); // update changes player values
-  printf("Player coords: %d,%d\n", player.xPos, player.yPos); //prints "Player coords: 2,3" not 0,0 since update changed the values
+// possible player 2
+// struct Player fred = {300, 144, -3, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
+
+//SDL_FreeSurface(&player.texture);
 //---------------------------------------------------------------
 
+// create level arrays and load level file
+  static Level lvl;
+
+  printf("preparing level\n");
+  prepare_level(&lvl);
+  char *lvl_arr = malloc((lvl.width*lvl.height)*sizeof(char));
+  load_level(lvl_arr,&lvl);
+  printf("%d, %d\n",lvl.width, lvl.height );
+
+
+// TODO make an Enemy struct
+// list of enemies
+//      struct Enemy *enems = malloc(lvl->enem_count*sizeof(struct Enemy));
+
+// TODO make a Block struct I will use player struct for now
   struct Player boden = {96,96,0, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/boden.png"))};
 
-
-   // bodenSurface = IMG_Load("Images/boden.png");
-   // gameState.boden = SDL_CreateTextureFromSurface(rend, bodenSurface);
-   // SDL_FreeSurface(bodenSurface);
-   //gumbaSurface = IMG_Load("Images/gumba.png");
-   //gameState.gumba = SDL_CreateTextureFromSurface(rend,gumbaSurface);
-   //SDL_FreeSurface(gumbaSurface);
 
 
    int now, last;
    double deltatime;
+   //printf("%d, %d\n", lvl.height,lvl.width);
+
    while(!game.done){
     last = SDL_GetPerformanceCounter();
     if(processEvent(win, &player, &game) == 1)
     game.done = 1;
-    // TODO iterate over level array and choose textures from chars in array
+// TODO iterate over level array and choose textures from chars in array
 
-    //collisionDetect(&gameState);
+//collisionDetect(&gameState);
 
+//fred.update(&fred);
     player.update(&player); // update changes player values
 
 // TODO create render function that iterates over level array and a list of active enemies to draw them
   SDL_SetRenderDrawColor(rend, 0,0,25,255);
     SDL_RenderClear(rend);
-         doRender(rend, player.xPos,player.yPos, player.texture);
-         doRender(rend, boden.xPos, boden.yPos, boden.texture);
+      //doRender(rend, fred.xPos, fred.yPos, fred.texture);
+
+      for (int i = lvl.height-1; i >= 0  ; i--) {
+        for (int j = 0; j < lvl.width; j++) {
+          //printf("%c", lvl_arr[(i*lvl.width)+j]);
+
+          if (lvl_arr[(i*lvl.width)+j] == '#'){
+            doRender(rend, j*48, (lvl.height-i)*48, boden.texture);
+          }
+        }
+      }
+
+      doRender(rend, player.xPos,player.yPos, player.texture);
     SDL_RenderPresent(rend);
 //------------------------------------------------------------------------------
 
@@ -141,6 +165,7 @@ int main(void)
    }
     //SDL_DestroyTexture(game.gumba);
     //SDL_DestroyTexture(game.boden);
+    free(lvl_arr);
     SDL_DestroyRenderer(rend);
     SDL_DestroyWindow(win);
     SDL_Quit();
