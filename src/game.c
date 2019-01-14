@@ -113,6 +113,7 @@ int main(void)
   prepare_level(&lvl);
   char *lvl_arr = malloc((lvl.width*lvl.height)*sizeof(char));
   load_level(lvl_arr,&lvl);
+  printf("%d, %d\n",lvl.width, lvl.height );
 
 
 // TODO make an Enemy struct
@@ -144,11 +145,12 @@ int main(void)
     SDL_RenderClear(rend);
       //doRender(rend, fred.xPos, fred.yPos, fred.texture);
 
-      for (int i = 0; i < lvl.height; i++) {
+      for (int i = lvl.height-1; i >= 0  ; i--) {
         for (int j = 0; j < lvl.width; j++) {
-          //printf("%c",(char)(lvl_arr[(i*lvl.width)+j]));
-          if (*(lvl_arr +(i*lvl.width)+j) == '#'){
-            doRender(rend, j*48, (i+1)*48, boden.texture);
+          //printf("%c", lvl_arr[(i*lvl.width)+j]);
+
+          if (lvl_arr[(i*lvl.width)+j] == '#'){
+            doRender(rend, j*48, (lvl.height-i)*48, boden.texture);
           }
         }
       }

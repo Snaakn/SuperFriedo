@@ -6,19 +6,20 @@ void prepare_level(Level *level){
 
   //count lines and characters in file
   char sgch; // holds single char
-  int chars; // holds number of chars in one line
+  int chars=0; // holds number of chars in one line
   int longest = 0; // finds the number of chars of the longest line
   int lines = 0; // holds the number of lines
   int enems = 0;
   printf("reading file\n");
   while ((sgch = fgetc(file)) != EOF){
     chars++;
+    printf("%d\n", sgch);
     if (sgch == '\n'){
       lines++;
       if (chars > longest){
         longest = chars;
-        chars = 0;
       }
+      chars = 0;
     }
     if (sgch == 'G'){
       enems++;
@@ -37,11 +38,11 @@ void prepare_level(Level *level){
 void load_level(char *arr, Level *level){
   FILE *file;
   file = fopen("levels/level1.txt", "r");
-  int i=0;
   int c=0;
-  while ((c = fgetc(file)) != EOF){
-    arr[i] = (char) c;
-    printf("%c", (char) arr[i]);
-    i++;
+  for (int i = 0; i < level->height; i++) {
+    for (int j = 0; j < level->width; j++) {
+      //c = fgetc(file);
+        arr[(i*(level->width))+j] = (char) fgetc(file);
+    }
   }
 }
