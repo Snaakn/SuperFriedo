@@ -2,9 +2,11 @@
 
 // player struct
 struct Player{
-  int xPos;
-  int yPos;
-  int dPos;
+  float xPos;
+  float yPos;
+ float dY;
+  float dX;
+
   void (*update)(struct Player *);
   void (*jump)(struct Player *);
 
