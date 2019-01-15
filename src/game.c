@@ -3,54 +3,41 @@
 #include "time.h"
 
 
-int processEvent(SDL_Window *win, struct Player *self, GameState *game)
-{
-  self->yPos += self->dY;
-  self->xPos += self->dX;
+int processEvent(SDL_Window *win, struct Player *p, GameState *game) {
+
   SDL_Event event;
 
-
-  while(SDL_PollEvent(&event))
-  {
+  while(SDL_PollEvent(&event)) {
     switch (event.type){
       case SDL_QUIT:
         game->done = 1;
         break;
-
-
+    }
     // Get input
-}
 
      const Uint8 *state = SDL_GetKeyboardState(NULL);
      if(state[SDL_SCANCODE_SPACE]){
-       if(self->yPos < 110)
-       self->dY =20;
+       p->jump(p);
 
      }
-
+     // Quit game by pressing esc
+     if(state[SDL_SCANCODE_ESCAPE])
+       game->done = 1;
+           
       if(state[SDL_SCANCODE_A]){
-            self-> dX -=0.5;
-            if (self->dX < -2){
-              self->dX = -2;
-            }
-
-    }
-      else if(state[SDL_SCANCODE_D]){
-        self-> dX +=0.5;
-        if (self->dX > 2) {
-           self ->dX = 2;
-        }else {
-          self->dX *=0.8;
-
-          if (fabs(self->dX)< 0.1)
-          self -> dX = 0;
-
+        p-> dX -= 1;
+        if (p->dX < -2){
+            p->dX = -2;
+        }
+            
       }
-
-}
-}
-
-
+      else if(state[SDL_SCANCODE_D]){
+        p->dX += 1;
+        if (p->dX > 2) {
+           p->dX = 2;
+        }
+      }
+  }
 
     return game->done;
 }
@@ -59,39 +46,21 @@ int processEvent(SDL_Window *win, struct Player *self, GameState *game)
 
 //-------------------------------------------------------------------------
 
- // void collisionDetect (GameState *game)
- // {
- //   for (int i  = 0; i < 15; i++) {
- //     float mw = 40, mh = 40;
- //     float mx = game->a.x;
- //     float my = game->a.y;
- //     float bx = game->block[i].x, by = game->block[i].y, bw = game->block[i].h, bh = game ->block[i].w;
- //    if(my+mh > by && my < by+bh)
- //    {
- //      if (mx < bx+bw && mx+mw > bx+bw)
- //      {
- //        game->a.x = bx+bw;
- //        mx = bx+bw;
- //      }else if (mx +mw > bx && mx < bx)
- //      {
- //        game -> a.x = bx-mw;
- //        mx = bx-mw;
- //      }
- //    }
- //    if(mx+mw > bx && mx<bx+bw){
- //      if(my < by+bh && my > by){
- //        game->a.y = by+bh;
- //      }
+  // Collision will not be possible until camera is working
+  // we NEED camera coords otherwise we can do it all again later!
+  
+ // int collision(int p_xPos, int p_yPos, int p_xSpeed, int p_ySpeed){
+ //   // to array coords:
+ //   //Something like this 
+ //    (camera_xPos-(p_xPos+p_xSpeed))/48
+ //   if (lvl_arr[y*SCREEN_HEIGHT+x] == #)
+ //     return 1; // 1 is for Block
  //
- //    }if (my+mh > by && my < by)
- //    {
- //      game->a.y = by-mh;
- //
- //    }
- //  }
- //
+ //   // enemy collision will work different
+ // 
+ //   //return no collision
+ //   return 0;
  // }
-
 
 
 //---------------------------MAIN-------------------------------------------
