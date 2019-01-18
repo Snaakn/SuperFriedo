@@ -13,7 +13,7 @@ void prepare_level(Level *level){
   printf("reading file\n");
   while ((sgch = fgetc(file)) != EOF){
     chars++;
-    printf("%d\n", sgch);
+    //printf("%d\n", sgch);
     if (sgch == '\n'){
       lines++;
       if (chars > longest){
@@ -31,7 +31,7 @@ void prepare_level(Level *level){
   level->width = longest;
   level->height = lines;
   fclose(file);
-  printf("level prepared\n");
+  //printf("level prepared\n");
   }
 
 

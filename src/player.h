@@ -1,4 +1,5 @@
 #include "gamewindow.h"
+#include "camera.h"
 
 // player struct
 struct Player{
@@ -6,12 +7,12 @@ struct Player{
   int yPos;
   int dY;
   int canjump;
-  void (*update)(struct Player *);
+  void (*update)(struct Player *, struct Cam *);
   void (*jump)(struct Player *);
 
   //TODO add SDL_Image file so later it can be drawn via player.draw
   SDL_Texture *texture;
 };
 
-void player_update(struct Player *);
+void player_update(struct Player *, struct Cam *);
 void player_jump(struct Player *);
