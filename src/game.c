@@ -70,7 +70,7 @@ int processEvent(SDL_Window *win, GameState *game) {
 
 
 //---------------------------MAIN-------------------------------------------
-int main(void)
+int main(int argc, char *argv[])
 {
   GameState game;
   game.done = 0;

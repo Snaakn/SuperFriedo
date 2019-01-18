@@ -17,5 +17,5 @@ unix: src/gamewindow.h src/player.h gamewindow.o player.o level.o camera.o
 	-rm gamewindow.o player.o level.o camera.o
 	./game
 
-win:	src/gamewindow.h src/player.h src/level.h gamewindow.o level.o
-	gcc -o game.exe gamewindow.o player.o level.o src/game.c $(SDLFLAGS) -lmingw32
+win: src/gamewindow.h src/player.h gamewindow.o player.o level.o camera.o
+	gcc -o game gamewindow.o player.o level.o camera.o src/game.c -lmingw32 $(SDLFLAGS)
