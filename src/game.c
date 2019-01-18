@@ -17,8 +17,8 @@ int processEvent(SDL_Window *win, GameState *game) {
 
 
 
-    return game->done;
   }
+  return game->done;
 }
 
   void getInput(GameState *game, struct Player *p, struct Cam *c){

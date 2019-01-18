@@ -18,3 +18,5 @@ typedef struct
   // SDL_Texture *gumba;
 
 }GameState;
+
+int collision(int, int, int, int);

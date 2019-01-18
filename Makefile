@@ -19,3 +19,6 @@ unix: src/gamewindow.h src/player.h gamewindow.o player.o level.o camera.o
 
 win: src/gamewindow.h src/player.h gamewindow.o player.o level.o camera.o
 	gcc -o game gamewindow.o player.o level.o camera.o src/game.c -lmingw32 $(SDLFLAGS)
+	del *.o
+	del *.ghc
+	./game.exe
