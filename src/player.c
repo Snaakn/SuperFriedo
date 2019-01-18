@@ -2,11 +2,11 @@
 #include "player.h"
 
 
-void player_update(struct Player *self){
-  if (self->xPos >=600)
-    self->xPos = 600;
-  if (self->xPos <= 1)
-    self->xPos = 1;
+void player_update(struct Player *self, struct Cam *camera){
+  if (self->xPos >=camera->xPos+SCREEN_WIDTH)
+    self->xPos = camera->xPos+SCREEN_WIDTH;
+  if (self->xPos <= camera->xPos)
+    self->xPos = camera->xPos;
 
     if (self->yPos < 100)
       self->yPos = 100;

@@ -1,6 +1,7 @@
 #include "level.h"
 #include "player.h"
-#include "time.h"
+
+//#include "time.h"
 
 
 int processEvent(SDL_Window *win, GameState *game) {
@@ -20,7 +21,7 @@ int processEvent(SDL_Window *win, GameState *game) {
   }
 }
 
-  void getInput(GameState *game, struct Player *p){
+  void getInput(GameState *game, struct Player *p, struct Cam *c){
 
     const Uint8 *state = SDL_GetKeyboardState(NULL);
 
@@ -36,13 +37,17 @@ int processEvent(SDL_Window *win, GameState *game) {
       p->canjump = 1;
     }
     // Player move left
-     if(state[SDL_SCANCODE_A]){
-       p->xPos -= 4;
-     }
-     // Player move right
-     if(state[SDL_SCANCODE_D]){
-       p->xPos += 4;
-       }
+    if(state[SDL_SCANCODE_A]){
+      p->xPos -= 4;
+    }
+    // Player move right
+    if(state[SDL_SCANCODE_D]){
+      if (p->xPos >=c->xPos+SCREEN_WIDTH/2){
+
+        c->xPos += 4;
+      }
+      p->xPos += 4;
+    }
   }
 
 //-------------------------------------------------------------------------
@@ -80,15 +85,14 @@ int main(void)
 // create a renderer, which sets up the graphics hardware
   Uint32 render_flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
   SDL_Renderer* rend = SDL_CreateRenderer(win, -1, render_flags);
-
+/************************CREATE ENTITIES*******************************/
 //--------------- Philipps player struktur:----------------------
 // the structure contains function pointers to update function or later walk and jump
 // create an instance of type player: {xPos, yPos, update-function-to-point-to}
   struct Player player = {300, 144,0,1, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
 // possible player 2
 // struct Player fred = {300, 144, -3, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
-
-//---------------------------------------------------------------
+//----------------------------------------------------------------
 
 // create level arrays and load level file
   static Level lvl;
@@ -102,37 +106,39 @@ int main(void)
 
 // TODO make a Block struct I will use player struct for now
   struct Player boden = {96,96,0,0, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/boden.png"))};
-
-
-
+  struct Cam camera = {0,(lvl.height-1)*48,0,lvl.height,0, cam_update};
+/***********************************************************************/
    int now, last;
    double deltatime;
    //printf("%d, %d\n", lvl.height,lvl.width);
 
    while(!game.done){
     last = SDL_GetPerformanceCounter();
-    getInput(&game, &player);
+    getInput(&game, &player, &camera);
     if(processEvent(win, &game) == 1)
     game.done = 1;
-
-    player.update(&player); // update changes player values
+//-----------------------------------UPDATE CALL--------------------------------
+    camera.update(&camera);
+    player.update(&player, &camera); // update changes player values
 
 // TODO create render function that iterates over level array and a list of active enemies to draw them
   SDL_SetRenderDrawColor(rend, 0,0,25,255);
     SDL_RenderClear(rend);
       //doRender(rend, fred.xPos, fred.yPos, fred.texture);
 
-      for (int i = lvl.height-1; i >= 0  ; i--) {
-        for (int j = 0; j < lvl.width; j++) {
+      // for (int i = lvl.height-1; i >= 0  ; i--) {
+      //   for (int j = 0; j < lvl.width; j++) {
+      for (int i = camera.arrY; i >= 0  ; i--) {
+        for (int j = camera.arrX; j < camera.arrX+15; j++) {
           //printf("%c", lvl_arr[(i*lvl.width)+j]);
 
           if (lvl_arr[(i*lvl.width)+j] == '#'){
-            doRender(rend, j*48, (lvl.height-i)*48, boden.texture);
+            doRender(rend, j*48-camera.xPos, ((lvl.height-i)*48), boden.texture);
           }
         }
       }
 
-      doRender(rend, player.xPos,player.yPos, player.texture);
+      doRender(rend, player.xPos-camera.xPos,player.yPos, player.texture);
     SDL_RenderPresent(rend);
 //------------------------------------------------------------------------------
 
