@@ -16,17 +16,11 @@ void player_update(struct Player *self){
       // gravity
     if (self->yPos > 48)
       self->yPos += self->dY;
-      // walk 
-     self->xPos += self->dX;
-     
-    // if (self->dX > 0)
-    //   self->dX-= 1;
-    // if(self->dX < 0)
-    //   self->dX+= 1;
 }
 
 void player_jump(struct Player *self){
-  if(self->yPos < 110)
-    self->dY =20;
-
+  if(self->yPos < 110 && self->canjump){
+    self->dY =25;
+    self->canjump=0;
+  }
 }

@@ -3,7 +3,7 @@
 #include "time.h"
 
 
-int processEvent(SDL_Window *win, struct Player *p, GameState *game) {
+int processEvent(SDL_Window *win, GameState *game) {
 
   SDL_Event event;
 
@@ -13,51 +13,52 @@ int processEvent(SDL_Window *win, struct Player *p, GameState *game) {
         game->done = 1;
         break;
     }
-    // Get input
 
-     const Uint8 *state = SDL_GetKeyboardState(NULL);
-     if(state[SDL_SCANCODE_SPACE]){
-       p->jump(p);
 
-     }
-     // Quit game by pressing esc
-     if(state[SDL_SCANCODE_ESCAPE])
-       game->done = 1;
-           
-      if(state[SDL_SCANCODE_A]){
-        p-> dX -= 1;
-        if (p->dX < -2){
-            p->dX = -2;
-        }
-            
-      }
-      else if(state[SDL_SCANCODE_D]){
-        p->dX += 1;
-        if (p->dX > 2) {
-           p->dX = 2;
-        }
-      }
-  }
 
     return game->done;
+  }
 }
 
+  void getInput(GameState *game, struct Player *p){
 
+    const Uint8 *state = SDL_GetKeyboardState(NULL);
+
+    // Quit game by pressing esc
+    if(state[SDL_SCANCODE_ESCAPE])
+      game->done = 1;
+
+    // Player Jump
+    if(state[SDL_SCANCODE_SPACE]){
+      p->jump(p);
+    }
+    if(!state[SDL_SCANCODE_SPACE]){
+      p->canjump = 1;
+    }
+    // Player move left
+     if(state[SDL_SCANCODE_A]){
+       p->xPos -= 4;
+     }
+     // Player move right
+     if(state[SDL_SCANCODE_D]){
+       p->xPos += 4;
+       }
+  }
 
 //-------------------------------------------------------------------------
 
   // Collision will not be possible until camera is working
   // we NEED camera coords otherwise we can do it all again later!
-  
+
  // int collision(int p_xPos, int p_yPos, int p_xSpeed, int p_ySpeed){
  //   // to array coords:
- //   //Something like this 
+ //   //Something like this
  //    (camera_xPos-(p_xPos+p_xSpeed))/48
  //   if (lvl_arr[y*SCREEN_HEIGHT+x] == #)
  //     return 1; // 1 is for Block
  //
  //   // enemy collision will work different
- // 
+ //
  //   //return no collision
  //   return 0;
  // }
@@ -83,26 +84,21 @@ int main(void)
 //--------------- Philipps player struktur:----------------------
 // the structure contains function pointers to update function or later walk and jump
 // create an instance of type player: {xPos, yPos, update-function-to-point-to}
-  struct Player player = {300, 144,0,0, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
+  struct Player player = {300, 144,0,1, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
 // possible player 2
 // struct Player fred = {300, 144, -3, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
 
-//SDL_FreeSurface(&player.texture);
 //---------------------------------------------------------------
 
 // create level arrays and load level file
   static Level lvl;
-
-  printf("preparing level\n");
   prepare_level(&lvl);
   char *lvl_arr = malloc((lvl.width*lvl.height)*sizeof(char));
   load_level(lvl_arr,&lvl);
-  printf("%d, %d\n",lvl.width, lvl.height );
-
 
 // TODO make an Enemy struct
 // list of enemies
-//      struct Enemy *enems = malloc(lvl->enem_count*sizeof(struct Enemy));
+// struct Enemy *enems = malloc(lvl.enem_count*sizeof(struct Enemy));
 
 // TODO make a Block struct I will use player struct for now
   struct Player boden = {96,96,0,0, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/boden.png"))};
@@ -115,13 +111,10 @@ int main(void)
 
    while(!game.done){
     last = SDL_GetPerformanceCounter();
-    if(processEvent(win, &player, &game) == 1)
+    getInput(&game, &player);
+    if(processEvent(win, &game) == 1)
     game.done = 1;
-// TODO iterate over level array and choose textures from chars in array
 
-//collisionDetect(&gameState);
-
-//fred.update(&fred);
     player.update(&player); // update changes player values
 
 // TODO create render function that iterates over level array and a list of active enemies to draw them
