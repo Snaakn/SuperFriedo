@@ -3,6 +3,7 @@
 
 //#include "time.h"
 
+int spacenotpressed = 1;
 
 int processEvent(SDL_Window *win, GameState *game) {
 
@@ -24,17 +25,20 @@ int processEvent(SDL_Window *win, GameState *game) {
   void getInput(GameState *game, struct Player *p, struct Cam *c){
 
     const Uint8 *state = SDL_GetKeyboardState(NULL);
-
     // Quit game by pressing esc
     if(state[SDL_SCANCODE_ESCAPE])
       game->done = 1;
-
+    if (p->lives == 0){
+      printf("Game Over\n");
+      game->done = 1;
+    }
     // Player Jump
-    if(state[SDL_SCANCODE_SPACE]){
+    if(state[SDL_SCANCODE_SPACE] && spacenotpressed){
       p->jump(p);
+      spacenotpressed = 0;
     }
     if(!state[SDL_SCANCODE_SPACE]){
-      p->canjump = 1;
+      spacenotpressed = 1;
     }
     // Player move left
     if(state[SDL_SCANCODE_A]){
@@ -52,21 +56,17 @@ int processEvent(SDL_Window *win, GameState *game) {
 
 //-------------------------------------------------------------------------
 
-  // Collision will not be possible until camera is working
-  // we NEED camera coords otherwise we can do it all again later!
-
- // int collision(int p_xPos, int p_yPos, int p_xSpeed, int p_ySpeed){
- //   // to array coords:
- //   //Something like this
- //    (camera_xPos-(p_xPos+p_xSpeed))/48
- //   if (lvl_arr[y*SCREEN_HEIGHT+x] == #)
- //     return 1; // 1 is for Block
- //
- //   // enemy collision will work different
- //
- //   //return no collision
- //   return 0;
- // }
+int collision(int x, int y, int x_dir, int y_dir, char *lvl_arr, struct Level *l){
+  int next_X = (int)((x+x_dir+24)/48);
+  int next_Y = ((l->height-1)-(int)((y+y_dir-48)/48));
+  printf("%d, %d\n", next_X, next_Y);
+  //printf("%c",lvl_arr[next_Y*(l->width)+next_X]);
+  if (lvl_arr[next_Y*(l->width)+next_X] == '#'){
+    //printf("collision\n");
+    return 1;
+  }
+  return 0;
+}
 
 
 //---------------------------MAIN-------------------------------------------
@@ -88,14 +88,14 @@ int main(int argc, char *argv[])
 /************************CREATE ENTITIES*******************************/
 //--------------- Philipps player struktur:----------------------
 // the structure contains function pointers to update function or later walk and jump
-// create an instance of type player: {xPos, yPos, update-function-to-point-to}
-  struct Player player = {300, 144,0,1, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
+// create an instance of type player: {lives, xPos, yPos, update-function-to-point-to}
+  struct Player player = {3,300, 144,0,1, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
 // possible player 2
 // struct Player fred = {300, 144, -3, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
 //----------------------------------------------------------------
 
 // create level arrays and load level file
-  static Level lvl;
+  static struct Level lvl;
   prepare_level(&lvl);
   char *lvl_arr = malloc((lvl.width*lvl.height)*sizeof(char));
   load_level(lvl_arr,&lvl);
@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
 // struct Enemy *enems = malloc(lvl.enem_count*sizeof(struct Enemy));
 
 // TODO make a Block struct I will use player struct for now
-  struct Player boden = {96,96,0,0, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/boden.png"))};
+  struct Player boden = {0,96,96,0,0, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/boden.png"))};
   struct Cam camera = {0,(lvl.height-1)*48,0,lvl.height,0, cam_update};
 /***********************************************************************/
    int now, last;
@@ -119,7 +119,8 @@ int main(int argc, char *argv[])
     game.done = 1;
 //-----------------------------------UPDATE CALL--------------------------------
     camera.update(&camera);
-    player.update(&player, &camera); // update changes player values
+    player.update(&player, &camera, lvl_arr, &lvl); // update changes player values
+//----------------------------------------------------------------------------
 
 // TODO create render function that iterates over level array and a list of active enemies to draw them
   SDL_SetRenderDrawColor(rend, 0,0,25,255);

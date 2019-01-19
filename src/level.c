@@ -1,6 +1,6 @@
 #include "level.h"
 
-void prepare_level(Level *level){
+void prepare_level(struct Level *level){
   FILE *file;
   file = fopen("levels/level1.txt", "r");
 
@@ -35,7 +35,7 @@ void prepare_level(Level *level){
   }
 
 
-void load_level(char *arr, Level *level){
+void load_level(char *arr, struct Level *level){
   FILE *file;
   file = fopen("levels/level1.txt", "r");
   int c=0;
