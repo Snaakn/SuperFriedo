@@ -17,8 +17,10 @@ void player_update(struct Player *self, struct Cam *camera, char *lvl_arr, struc
     if (self->dY > -8)
       self->dY -= 2;
       // gravity
-    if (!collision(self->xPos, self->yPos, 0, self->dY, lvl_arr, level))
+    if (!collision(self->xPos, self->yPos, 0, self->dY, lvl_arr, level)){
+      self->canjump = 0;
       self->yPos += self->dY;
+    }
     else {
       self->canjump=1;
       self->yPos -= self->yPos%48;

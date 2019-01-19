@@ -94,6 +94,10 @@ int main(int argc, char *argv[])
 // struct Player fred = {300, 144, -3, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
 //----------------------------------------------------------------
 
+//---UI-------------------------------
+SDL_Texture *lives_image = SDL_CreateTextureFromSurface(rend, IMG_Load("Images/lives.png"));
+//------------------------------------
+
 // create level arrays and load level file
   static struct Level lvl;
   prepare_level(&lvl);
@@ -127,8 +131,11 @@ int main(int argc, char *argv[])
     SDL_RenderClear(rend);
       //doRender(rend, fred.xPos, fred.yPos, fred.texture);
 
-      // for (int i = lvl.height-1; i >= 0  ; i--) {
-      //   for (int j = 0; j < lvl.width; j++) {
+    for(int i = 0; i< player.lives;i++){
+      doRender(rend, (i)*24,SCREEN_HEIGHT, lives_image);
+    }
+
+
       for (int i = camera.arrY; i >= 0  ; i--) {
         for (int j = camera.arrX; j < camera.arrX+15; j++) {
           //printf("%c", lvl_arr[(i*lvl.width)+j]);
