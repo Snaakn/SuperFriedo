@@ -1,11 +1,11 @@
 #include "stdio.h"
 #include "stdlib.h"
 
-typedef struct {
+struct Level{
   int width;
   int height;
   int enem_count;
-}Level;
+};
 
-void prepare_level(Level *);
-void load_level(char *,Level *level);
+void prepare_level(struct Level *);
+void load_level(char *,struct Level *level);

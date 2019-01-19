@@ -2,8 +2,6 @@
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_image.h>
 #include "game.h"
-#include "level.h"
-
 
 #define SCREEN_NAME "Super Friedolin Go Pikachu(TM)"
 #define SCREEN_WIDTH 640

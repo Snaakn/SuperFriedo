@@ -1,3 +1,5 @@
+#include "level.h"
+
 typedef struct
 {
   int x,y;
@@ -19,4 +21,4 @@ typedef struct
 
 }GameState;
 
-int collision(int, int, int, int);
+int collision(int x, int y, int x_dir, int y_dir, char *lvl_arr, struct Level *l);

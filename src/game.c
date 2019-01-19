@@ -52,21 +52,14 @@ int processEvent(SDL_Window *win, GameState *game) {
 
 //-------------------------------------------------------------------------
 
-  // Collision will not be possible until camera is working
-  // we NEED camera coords otherwise we can do it all again later!
-
- // int collision(int p_xPos, int p_yPos, int p_xSpeed, int p_ySpeed){
- //   // to array coords:
- //   //Something like this
- //    (camera_xPos-(p_xPos+p_xSpeed))/48
- //   if (lvl_arr[y*SCREEN_HEIGHT+x] == #)
- //     return 1; // 1 is for Block
- //
- //   // enemy collision will work different
- //
- //   //return no collision
- //   return 0;
- // }
+int collision(int x, int y, int x_dir, int y_dir, char *lvl_arr, struct Level *l){
+  int next_X = (x+x_dir)/48;
+  int next_Y = (l->height-1)-((y+y_dir)/48);
+  if (lvl_arr[next_Y*(l->width-1)+next_X] == '#')
+    return 1;
+  
+  return 0;
+}
 
 
 //---------------------------MAIN-------------------------------------------
@@ -95,7 +88,7 @@ int main(int argc, char *argv[])
 //----------------------------------------------------------------
 
 // create level arrays and load level file
-  static Level lvl;
+  static struct Level lvl;
   prepare_level(&lvl);
   char *lvl_arr = malloc((lvl.width*lvl.height)*sizeof(char));
   load_level(lvl_arr,&lvl);
