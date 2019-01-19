@@ -57,11 +57,12 @@ int processEvent(SDL_Window *win, GameState *game) {
 //-------------------------------------------------------------------------
 
 int collision(int x, int y, int x_dir, int y_dir, char *lvl_arr, struct Level *l){
-  int next_X = (int)((x+x_dir+24)/48);
+  int next_X = (int)((x+x_dir+8)/48);
+  int next_X2 = (int)((x+x_dir+35)/48);
   int next_Y = ((l->height-1)-(int)((y+y_dir-48)/48));
   printf("%d, %d\n", next_X, next_Y);
   //printf("%c",lvl_arr[next_Y*(l->width)+next_X]);
-  if (lvl_arr[next_Y*(l->width)+next_X] == '#'){
+  if ((lvl_arr[next_Y*(l->width)+next_X] == '#') || (lvl_arr[next_Y*(l->width)+next_X2] == '#')){
     //printf("collision\n");
     return 1;
   }
