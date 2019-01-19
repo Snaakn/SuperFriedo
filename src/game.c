@@ -132,7 +132,7 @@ SDL_Texture *lives_image = SDL_CreateTextureFromSurface(rend, IMG_Load("Images/l
       //doRender(rend, fred.xPos, fred.yPos, fred.texture);
 
     for(int i = 0; i< player.lives;i++){
-      doRender(rend, (i)*24,SCREEN_HEIGHT, lives_image);
+      doRender(rend, (i)*48,SCREEN_HEIGHT, player.texture);
     }
 
 
