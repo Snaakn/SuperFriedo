@@ -7,6 +7,7 @@
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 480
 #define SCREEN_SCALE 0
+#define TILE_SIZE 48
 
 // Function prototypes
 void doRender(SDL_Renderer *rend, int x, int y, SDL_Texture *tex);

@@ -3,7 +3,7 @@
 void doRender(SDL_Renderer *rend, int x, int y, SDL_Texture *tex)
 {
 
-  SDL_Rect rect = {x,SCREEN_HEIGHT-y,48,48};
+  SDL_Rect rect = {x,SCREEN_HEIGHT-y,TILE_SIZE,TILE_SIZE};
   SDL_RenderCopy(rend, tex, NULL, &rect);
 
   // SDL_Rect rect = {x, y,48,48};

@@ -11,6 +11,7 @@ void player_update(struct Player *self, struct Cam *camera, char *lvl_arr, struc
     if (self->yPos <= 0){
       self->lives--;
       self-> yPos = SCREEN_HEIGHT;
+      self->xPos = camera->xPos+(self->lives*TILE_SIZE);
       printf("One life lost\n");
     }
 
@@ -23,7 +24,7 @@ void player_update(struct Player *self, struct Cam *camera, char *lvl_arr, struc
     }
     else {
       self->canjump=1;
-      self->yPos -= self->yPos%48;
+      self->yPos -= self->yPos%TILE_SIZE;
     }
 }
 

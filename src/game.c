@@ -57,9 +57,9 @@ int processEvent(SDL_Window *win, GameState *game) {
 //-------------------------------------------------------------------------
 
 int collision(int x, int y, int x_dir, int y_dir, char *lvl_arr, struct Level *l){
-  int next_X = (int)((x+x_dir+8)/48);
-  int next_X2 = (int)((x+x_dir+35)/48);
-  int next_Y = ((l->height-1)-(int)((y+y_dir-48)/48));
+  int next_X = (int)((x+x_dir+8)/TILE_SIZE);
+  int next_X2 = (int)((x+x_dir+35)/TILE_SIZE);
+  int next_Y = ((l->height-1)-(int)((y+y_dir-TILE_SIZE)/TILE_SIZE));
   printf("%d, %d\n", next_X, next_Y);
   //printf("%c",lvl_arr[next_Y*(l->width)+next_X]);
   if ((lvl_arr[next_Y*(l->width)+next_X] == '#') || (lvl_arr[next_Y*(l->width)+next_X2] == '#')){
@@ -111,7 +111,7 @@ SDL_Texture *lives_image = SDL_CreateTextureFromSurface(rend, IMG_Load("Images/l
 
 // TODO make a Block struct I will use player struct for now
   struct Player boden = {0,96,96,0,0, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/boden.png"))};
-  struct Cam camera = {0,(lvl.height-1)*48,0,lvl.height,0, cam_update};
+  struct Cam camera = {0,(lvl.height-1)*TILE_SIZE,0,lvl.height,0, cam_update};
 /***********************************************************************/
    int now, last;
    double deltatime;
@@ -133,7 +133,7 @@ SDL_Texture *lives_image = SDL_CreateTextureFromSurface(rend, IMG_Load("Images/l
       //doRender(rend, fred.xPos, fred.yPos, fred.texture);
 
     for(int i = 0; i< player.lives;i++){
-      doRender(rend, (i)*48,SCREEN_HEIGHT, player.texture);
+      doRender(rend, (i)*TILE_SIZE,SCREEN_HEIGHT, player.texture);
     }
 
 
@@ -142,7 +142,7 @@ SDL_Texture *lives_image = SDL_CreateTextureFromSurface(rend, IMG_Load("Images/l
           //printf("%c", lvl_arr[(i*lvl.width)+j]);
 
           if (lvl_arr[(i*lvl.width)+j] == '#'){
-            doRender(rend, j*48-camera.xPos, ((lvl.height-i)*48), boden.texture);
+            doRender(rend, j*TILE_SIZE-camera.xPos, ((lvl.height-i)*TILE_SIZE), boden.texture);
           }
         }
       }
