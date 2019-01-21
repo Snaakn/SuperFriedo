@@ -22,3 +22,4 @@ typedef struct
 }GameState;
 
 int collision(int x, int y, int x_dir, int y_dir, char *lvl_arr, struct Level *l);
+int x_collision(int x, int y, int x_dir, char *lvl_arr, struct Level *l);
