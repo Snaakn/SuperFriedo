@@ -4,8 +4,8 @@
 #include "game.h"
 
 #define SCREEN_NAME "Super Friedolin Go Pikachu(TM)"
-#define SCREEN_WIDTH 640
-#define SCREEN_HEIGHT 480
+#define SCREEN_WIDTH 800
+#define SCREEN_HEIGHT 600
 #define SCREEN_SCALE 0
 #define TILE_SIZE 48
 
