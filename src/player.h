@@ -15,5 +15,8 @@ struct Player{
   SDL_Texture *texture;
 };
 
+
+
+
 void player_update(struct Player *, struct Cam *, char *, struct Level *);
 void player_jump(struct Player *);
