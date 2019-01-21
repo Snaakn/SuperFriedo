@@ -75,11 +75,11 @@ int collision(int x, int y, int x_dir, int y_dir, char *lvl_arr, struct Level *l
   int next_X = (int)((x+x_dir+8)/TILE_SIZE);
   int next_X2 = (int)((x+x_dir+38)/TILE_SIZE);
   int next_Y = ((l->height-1)-(int)((y+y_dir-TILE_SIZE)/TILE_SIZE));
-  int next_Y2 = ((l->height-1)-(int)((y+y_dir)/TILE_SIZE));
+  int next_Y2 = ((l->height-1)-(int)((y+y_dir-TILE_SIZE)/TILE_SIZE));
 
   printf("%d, %d\n", next_X, next_Y);
   //printf("%c",lvl_arr[next_Y*(l->width)+next_X]);
-  if ((lvl_arr[next_Y*(l->width)+next_X] == '#') || (lvl_arr[next_Y*(l->width)+next_X2] == '#') || (lvl_arr[next_Y2*(l->width)+next_X] == '#') || (lvl_arr[next_Y2*(l->width)+next_X2] == '#')){
+  if ((lvl_arr[next_Y*(l->width)+next_X] == '#') || (lvl_arr[next_Y*(l->width)+next_X2] == '#') || (lvl_arr[next_Y*(l->width)+next_X] == '#') || (lvl_arr[next_Y*(l->width)+next_X2] == '#')){
     //printf("collision\n");
     return 1;
   }
@@ -155,7 +155,7 @@ SDL_Texture *lives_image = SDL_CreateTextureFromSurface(rend, IMG_Load("Images/l
 
 
       for (int i = camera.arrY; i >= 0  ; i--) {
-        for (int j = camera.arrX; j < camera.arrX+15; j++) {
+        for (int j = camera.arrX; j < camera.arrX+((SCREEN_WIDTH+(2*TILE_SIZE))/(TILE_SIZE)); j++) {
           //printf("%c", lvl_arr[(i*lvl.width)+j]);
 
           if (lvl_arr[(i*lvl.width)+j] == '#'){
