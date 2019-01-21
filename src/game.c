@@ -1,7 +1,4 @@
-//#include "level.h"
-#include "player.h"
-
-//#include "time.h"
+#include "enemy.h"
 
 int spacenotpressed = 1;
 
@@ -59,8 +56,8 @@ int processEvent(SDL_Window *win, GameState *game) {
 //-------------------------------------------------------------------------
 
 int x_collision(int x, int y, int x_dir, char *lvl_arr, struct Level *l){
-  int next_X = (int)((x+x_dir+8)/TILE_SIZE);
-  int next_X2 = (int)((x+x_dir+38)/TILE_SIZE);
+  int next_X = (int)((x+x_dir+4)/TILE_SIZE);
+  int next_X2 = (int)((x+x_dir+40)/TILE_SIZE);
   int next_Y = ((l->height-1)-(int)((y-TILE_SIZE)/TILE_SIZE));
 
   if ((lvl_arr[next_Y*(l->width)+next_X] == '#') || (lvl_arr[next_Y*(l->width)+next_X2] == '#')) {
@@ -72,14 +69,14 @@ int x_collision(int x, int y, int x_dir, char *lvl_arr, struct Level *l){
 }
 
 int collision(int x, int y, int x_dir, int y_dir, char *lvl_arr, struct Level *l){
-  int next_X = (int)((x+x_dir+8)/TILE_SIZE);
-  int next_X2 = (int)((x+x_dir+38)/TILE_SIZE);
+  int next_X = (int)((x+x_dir+4)/TILE_SIZE);
+  int next_X2 = (int)((x+x_dir+40)/TILE_SIZE);
   int next_Y = ((l->height-1)-(int)((y+y_dir-TILE_SIZE)/TILE_SIZE));
-  int next_Y2 = ((l->height-1)-(int)((y+y_dir-TILE_SIZE)/TILE_SIZE));
+  int next_Y2 = ((l->height-1)-(int)((y+y_dir-(TILE_SIZE/4))/TILE_SIZE));
 
-  printf("%d, %d\n", next_X, next_Y);
+  //printf("%d, %d\n", next_X, next_Y);
   //printf("%c",lvl_arr[next_Y*(l->width)+next_X]);
-  if ((lvl_arr[next_Y*(l->width)+next_X] == '#') || (lvl_arr[next_Y*(l->width)+next_X2] == '#') || (lvl_arr[next_Y*(l->width)+next_X] == '#') || (lvl_arr[next_Y*(l->width)+next_X2] == '#')){
+  if ((lvl_arr[next_Y*(l->width)+next_X] == '#') || (lvl_arr[next_Y*(l->width)+next_X2] == '#') || (lvl_arr[next_Y2*(l->width)+next_X] == '#') || (lvl_arr[next_Y2*(l->width)+next_X2] == '#')){
     //printf("collision\n");
     return 1;
   }
@@ -111,6 +108,8 @@ int main(int argc, char *argv[])
 // possible player 2
 // struct Player fred = {300, 144, -3, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
 //----------------------------------------------------------------
+struct Enemy gumba1 = {1,1,-2,SCREEN_WIDTH,TILE_SIZE*2,0, enemy_update, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
+
 
 //---UI-------------------------------
 SDL_Texture *lives_image = SDL_CreateTextureFromSurface(rend, IMG_Load("Images/lives.png"));
@@ -142,6 +141,7 @@ SDL_Texture *lives_image = SDL_CreateTextureFromSurface(rend, IMG_Load("Images/l
 //-----------------------------------UPDATE CALL--------------------------------
     camera.update(&camera);
     player.update(&player, &camera, lvl_arr, &lvl); // update changes player values
+    gumba1.update(&gumba1, lvl_arr, &lvl);
 //----------------------------------------------------------------------------
 
 // TODO create render function that iterates over level array and a list of active enemies to draw them
@@ -165,12 +165,13 @@ SDL_Texture *lives_image = SDL_CreateTextureFromSurface(rend, IMG_Load("Images/l
       }
 
       doRender(rend, player.xPos-camera.xPos,player.yPos, player.texture);
+      doRender(rend, gumba1.xPos-camera.xPos, gumba1.yPos, gumba1.texture);
     SDL_RenderPresent(rend);
 //------------------------------------------------------------------------------
 
      now = SDL_GetPerformanceCounter();
      deltatime = (double)((now-last) / (double) SDL_GetPerformanceFrequency());
-     SDL_Delay((1000-deltatime)/60);
+     SDL_Delay(((1000)/60)-deltatime/((1000)/60));
    }
     //SDL_DestroyTexture(game.gumba);
     //SDL_DestroyTexture(game.boden);
