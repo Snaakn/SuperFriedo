@@ -184,7 +184,8 @@ SDL_Texture *bgimage = SDL_CreateTextureFromSurface(rend, IMG_Load("Images/backg
 
      now = SDL_GetPerformanceCounter();
      deltatime = (double)((now-last) / (double) SDL_GetPerformanceFrequency());
-     SDL_Delay(((1000)/60)-deltatime/((1000)/60));
+  //   SDL_Delay(((1000)/60)-deltatime/((1000)/60));
+     SDL_Delay((1000-deltatime)/60);
    }
     //SDL_DestroyTexture(game.gumba);
     //SDL_DestroyTexture(game.boden);
