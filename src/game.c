@@ -19,7 +19,7 @@ int processEvent(SDL_Window *win, GameState *game) {
   return game->done;
 }
 
-  void getInput(GameState *game, struct Player *p, struct Cam *c, char *l_a, struct Level *l){
+  void getInput(GameState *game, struct Player *p, struct Cam *c, char *l_a, struct Level *l, struct Background *b1, struct Background *b2){
 
     const Uint8 *state = SDL_GetKeyboardState(NULL);
     // Quit game by pressing esc
@@ -47,6 +47,8 @@ int processEvent(SDL_Window *win, GameState *game) {
       if (!x_collision(p->xPos, p->yPos, 4, l_a, l)){
         if (p->xPos >=c->xPos+SCREEN_WIDTH/2){
           c->xPos += 4;
+          b1->xPos -= 3;
+          b2->xPos -= 3;
         }
         p->xPos += 4;
       }
@@ -89,8 +91,8 @@ int main(int argc, char *argv[])
 {
   GameState game;
   game.done = 0;
-  SDL_Surface *bodenSurface = NULL;
-  SDL_Surface *gumbaSurface = NULL;
+  // SDL_Surface *bodenSurface = NULL;
+  // SDL_Surface *gumbaSurface = NULL;
 
   SDL_Window* win = SDL_CreateWindow(SCREEN_NAME,
     SDL_WINDOWPOS_CENTERED,
@@ -115,6 +117,11 @@ struct Enemy gumba1 = {1,1,-2,SCREEN_WIDTH,TILE_SIZE*2,0, enemy_update, SDL_Crea
 SDL_Texture *lives_image = SDL_CreateTextureFromSurface(rend, IMG_Load("Images/lives.png"));
 //------------------------------------
 
+struct Background bg1 = {0, background_update};
+struct Background bg2 = {SCREEN_WIDTH*2, background_update};
+
+SDL_Texture *bgimage = SDL_CreateTextureFromSurface(rend, IMG_Load("Images/background.png"));
+
 // create level arrays and load level file
   static struct Level lvl;
   prepare_level(&lvl);
@@ -135,22 +142,27 @@ SDL_Texture *lives_image = SDL_CreateTextureFromSurface(rend, IMG_Load("Images/l
 
    while(!game.done){
     last = SDL_GetPerformanceCounter();
-    getInput(&game, &player, &camera, lvl_arr, &lvl);
+    getInput(&game, &player, &camera, lvl_arr, &lvl, &bg1, &bg2);
     if(processEvent(win, &game) == 1)
     game.done = 1;
 //-----------------------------------UPDATE CALL--------------------------------
     camera.update(&camera);
     player.update(&player, &camera, lvl_arr, &lvl); // update changes player values
     gumba1.update(&gumba1, lvl_arr, &lvl);
+    bg1.update(&bg1);
+    bg2.update(&bg2);
 //----------------------------------------------------------------------------
 
 // TODO create render function that iterates over level array and a list of active enemies to draw them
-  SDL_SetRenderDrawColor(rend, 0,0,25,255);
+  //SDL_SetRenderDrawColor(rend, 0,0,25,255);
     SDL_RenderClear(rend);
       //doRender(rend, fred.xPos, fred.yPos, fred.texture);
+    doRender(rend, bg1.xPos, SCREEN_HEIGHT, SCREEN_WIDTH*2, SCREEN_HEIGHT, bgimage);
+    doRender(rend, bg2.xPos, SCREEN_HEIGHT, SCREEN_WIDTH*2, SCREEN_HEIGHT, bgimage);
+    //printf("%d\n",bg1.xPos);
 
     for(int i = 0; i< player.lives;i++){
-      doRender(rend, (i)*TILE_SIZE,SCREEN_HEIGHT, player.texture);
+      doRender(rend, (i)*TILE_SIZE,SCREEN_HEIGHT, TILE_SIZE, TILE_SIZE, player.texture);
     }
 
 
@@ -159,13 +171,14 @@ SDL_Texture *lives_image = SDL_CreateTextureFromSurface(rend, IMG_Load("Images/l
           //printf("%c", lvl_arr[(i*lvl.width)+j]);
 
           if (lvl_arr[(i*lvl.width)+j] == '#'){
-            doRender(rend, j*TILE_SIZE-camera.xPos, ((lvl.height-i)*TILE_SIZE), boden.texture);
+            doRender(rend, j*TILE_SIZE-camera.xPos, ((lvl.height-i)*TILE_SIZE), TILE_SIZE, TILE_SIZE, boden.texture);
           }
         }
       }
 
-      doRender(rend, player.xPos-camera.xPos,player.yPos, player.texture);
-      doRender(rend, gumba1.xPos-camera.xPos, gumba1.yPos, gumba1.texture);
+      doRender(rend, player.xPos-camera.xPos,player.yPos, TILE_SIZE, TILE_SIZE, player.texture);
+      doRender(rend, gumba1.xPos-camera.xPos, gumba1.yPos, TILE_SIZE, TILE_SIZE, gumba1.texture);
+
     SDL_RenderPresent(rend);
 //------------------------------------------------------------------------------
 

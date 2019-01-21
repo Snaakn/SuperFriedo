@@ -9,5 +9,13 @@
 #define SCREEN_SCALE 0
 #define TILE_SIZE 48
 
+
+struct Background{
+  int xPos;
+  void (*update)(struct Background *);
+};
+
+
 // Function prototypes
-void doRender(SDL_Renderer *rend, int x, int y, SDL_Texture *tex);
+void doRender(SDL_Renderer *rend, int x, int y, int width, int height, SDL_Texture *tex);
+void background_update(struct Background *);

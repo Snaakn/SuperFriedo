@@ -1,9 +1,9 @@
 #include "gamewindow.h"
 
-void doRender(SDL_Renderer *rend, int x, int y, SDL_Texture *tex)
+void doRender(SDL_Renderer *rend, int x, int y, int width, int height, SDL_Texture *tex)
 {
 
-  SDL_Rect rect = {x,SCREEN_HEIGHT-y,TILE_SIZE,TILE_SIZE};
+  SDL_Rect rect = {x,SCREEN_HEIGHT-y,width,height};
   SDL_RenderCopy(rend, tex, NULL, &rect);
 
   // SDL_Rect rect = {x, y,48,48};
@@ -30,3 +30,7 @@ void doRender(SDL_Renderer *rend, int x, int y, SDL_Texture *tex)
   //Gumba a = game->a;
   //a->y += a ->dy;
 //}
+void background_update(struct Background *self){
+  if (self->xPos <= (-1600))
+    self->xPos = SCREEN_WIDTH;
+}
