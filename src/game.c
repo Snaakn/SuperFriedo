@@ -22,7 +22,7 @@ int processEvent(SDL_Window *win, GameState *game) {
   return game->done;
 }
 
-  void getInput(GameState *game, struct Player *p, struct Cam *c){
+  void getInput(GameState *game, struct Player *p, struct Cam *c, char *l_a, struct Level *l){
 
     const Uint8 *state = SDL_GetKeyboardState(NULL);
     // Quit game by pressing esc
@@ -42,27 +42,44 @@ int processEvent(SDL_Window *win, GameState *game) {
     }
     // Player move left
     if(state[SDL_SCANCODE_A]){
-      p->xPos -= 4;
+      if (!x_collision(p->xPos, p->yPos, -4, l_a, l))
+        p->xPos -= 4;
     }
     // Player move right
     if(state[SDL_SCANCODE_D]){
-      if (p->xPos >=c->xPos+SCREEN_WIDTH/2){
-
-        c->xPos += 4;
+      if (!x_collision(p->xPos, p->yPos, 4, l_a, l)){
+        if (p->xPos >=c->xPos+SCREEN_WIDTH/2){
+          c->xPos += 4;
+        }
+        p->xPos += 4;
       }
-      p->xPos += 4;
     }
   }
 
 //-------------------------------------------------------------------------
 
+int x_collision(int x, int y, int x_dir, char *lvl_arr, struct Level *l){
+  int next_X = (int)((x+x_dir+8)/TILE_SIZE);
+  int next_X2 = (int)((x+x_dir+38)/TILE_SIZE);
+  int next_Y = ((l->height-1)-(int)((y-TILE_SIZE)/TILE_SIZE));
+
+  if ((lvl_arr[next_Y*(l->width)+next_X] == '#') || (lvl_arr[next_Y*(l->width)+next_X2] == '#')) {
+    return 1;
+  }
+
+
+  return 0;
+}
+
 int collision(int x, int y, int x_dir, int y_dir, char *lvl_arr, struct Level *l){
   int next_X = (int)((x+x_dir+8)/TILE_SIZE);
-  int next_X2 = (int)((x+x_dir+35)/TILE_SIZE);
+  int next_X2 = (int)((x+x_dir+38)/TILE_SIZE);
   int next_Y = ((l->height-1)-(int)((y+y_dir-TILE_SIZE)/TILE_SIZE));
+  int next_Y2 = ((l->height-1)-(int)((y+y_dir)/TILE_SIZE));
+
   printf("%d, %d\n", next_X, next_Y);
   //printf("%c",lvl_arr[next_Y*(l->width)+next_X]);
-  if ((lvl_arr[next_Y*(l->width)+next_X] == '#') || (lvl_arr[next_Y*(l->width)+next_X2] == '#')){
+  if ((lvl_arr[next_Y*(l->width)+next_X] == '#') || (lvl_arr[next_Y*(l->width)+next_X2] == '#') || (lvl_arr[next_Y2*(l->width)+next_X] == '#') || (lvl_arr[next_Y2*(l->width)+next_X2] == '#')){
     //printf("collision\n");
     return 1;
   }
@@ -119,7 +136,7 @@ SDL_Texture *lives_image = SDL_CreateTextureFromSurface(rend, IMG_Load("Images/l
 
    while(!game.done){
     last = SDL_GetPerformanceCounter();
-    getInput(&game, &player, &camera);
+    getInput(&game, &player, &camera, lvl_arr, &lvl);
     if(processEvent(win, &game) == 1)
     game.done = 1;
 //-----------------------------------UPDATE CALL--------------------------------
