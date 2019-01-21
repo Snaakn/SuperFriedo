@@ -28,7 +28,7 @@ int processEvent(SDL_Window *win, GameState *game) {
     // Quit game by pressing esc
     if(state[SDL_SCANCODE_ESCAPE])
       game->done = 1;
-    if (p->lives == 0){
+    if (p->lives < 0){
       printf("Game Over\n");
       game->done = 1;
     }
