@@ -95,22 +95,14 @@ int main(int argc, char *argv[])
   // SDL_Surface *gumbaSurface = NULL;
 
   SDL_Window* win = SDL_CreateWindow(SCREEN_NAME,
-    SDL_WINDOWPOS_CENTERED,
-    SDL_WINDOWPOS_CENTERED,
-    SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_SCALE);
+                                     SDL_WINDOWPOS_CENTERED,
+                                     SDL_WINDOWPOS_CENTERED,
+                                     SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_SCALE);
 
 // create a renderer, which sets up the graphics hardware
   Uint32 render_flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
   SDL_Renderer* rend = SDL_CreateRenderer(win, -1, render_flags);
-/************************CREATE ENTITIES*******************************/
-//--------------- Philipps player struktur:----------------------
-// the structure contains function pointers to update function or later walk and jump
-// create an instance of type player: {lives, xPos, yPos, update-function-to-point-to}
-  struct Player player = {3,300, 144,0,1, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
-// possible player 2
-// struct Player fred = {300, 144, -3, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
-//----------------------------------------------------------------
-struct Enemy gumba1 = {1,1,-2,SCREEN_WIDTH,TILE_SIZE*2,0, enemy_update, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
+
 
 
 //---UI-------------------------------
@@ -119,77 +111,98 @@ SDL_Texture *lives_image = SDL_CreateTextureFromSurface(rend, IMG_Load("Images/l
 
 struct Background bg1 = {0, background_update};
 struct Background bg2 = {SCREEN_WIDTH*2, background_update};
-
 SDL_Texture *bgimage = SDL_CreateTextureFromSurface(rend, IMG_Load("Images/background.png"));
 
 // create level arrays and load level file
-  static struct Level lvl;
-  prepare_level(&lvl);
-  char *lvl_arr = malloc((lvl.width*lvl.height)*sizeof(char));
-  load_level(lvl_arr,&lvl);
+static struct Level lvl;
+prepare_level(&lvl);
+char *lvl_arr = malloc((lvl.width*lvl.height)*sizeof(char));
+load_level(lvl_arr,&lvl);
 
-// TODO make an Enemy struct
-// list of enemies
-// struct Enemy *enems = malloc(lvl.enem_count*sizeof(struct Enemy));
+/************************CREATE ENTITIES*******************************/
+//--------------- Philipps player struktur:----------------------
+// the structure contains function pointers to update function or later walk and jump
+struct Player player = {3,300, 144,0,1, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
+// create an instance of type player: {lives, xPos, yPos, update-function-to-point-to}
+
+//-----------------Create enemies--------------------------------
+struct Enemy *gumba = calloc(lvl.enem_count, sizeof(struct Enemy));
+int gcount = 0;
+struct Enemy prototype = {1,0,-2,0,0,0, enemy_update, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
+for (int i = 0; i < lvl.enem_count; i++) {
+  gumba[i] = prototype;
+}
 
 // TODO make a Block struct I will use player struct for now
-  struct Player boden = {0,96,96,0,0, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/boden.png"))};
-  struct Cam camera = {0,(lvl.height-1)*TILE_SIZE,0,lvl.height,0, cam_update};
+struct Player boden = {0,96,96,0,0, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/boden.png"))};
+struct Cam camera = {0,(lvl.height-1)*TILE_SIZE,0,lvl.height,0, cam_update};
 /***********************************************************************/
-   int now, last;
-   double deltatime;
-   //printf("%d, %d\n", lvl.height,lvl.width);
+int now, last;
+double deltatime;
+//printf("%d, %d\n", lvl.height,lvl.width);
 
-   while(!game.done){
-    last = SDL_GetPerformanceCounter();
-    getInput(&game, &player, &camera, lvl_arr, &lvl, &bg1, &bg2);
-    if(processEvent(win, &game) == 1)
-    game.done = 1;
-//-----------------------------------UPDATE CALL--------------------------------
-    camera.update(&camera);
-    player.update(&player, &camera, lvl_arr, &lvl); // update changes player values
-    gumba1.update(&gumba1, lvl_arr, &lvl);
-    bg1.update(&bg1);
-    bg2.update(&bg2);
-//----------------------------------------------------------------------------
-
-// TODO create render function that iterates over level array and a list of active enemies to draw them
-  //SDL_SetRenderDrawColor(rend, 0,0,25,255);
-    SDL_RenderClear(rend);
-      //doRender(rend, fred.xPos, fred.yPos, fred.texture);
-    doRender(rend, bg1.xPos, SCREEN_HEIGHT, SCREEN_WIDTH*2, SCREEN_HEIGHT, bgimage);
-    doRender(rend, bg2.xPos, SCREEN_HEIGHT, SCREEN_WIDTH*2, SCREEN_HEIGHT, bgimage);
-    //printf("%d\n",bg1.xPos);
-
-    for(int i = 0; i< player.lives;i++){
-      doRender(rend, (i)*TILE_SIZE,SCREEN_HEIGHT, TILE_SIZE, TILE_SIZE, player.texture);
+// Gameloop---------------------------------------------------------------------
+while(!game.done){
+  last = SDL_GetPerformanceCounter();
+  getInput(&game, &player, &camera, lvl_arr, &lvl, &bg1, &bg2);
+  if(processEvent(win, &game) == 1)
+  game.done = 1;
+  //----------------------UPDATE CALLS--------------------------------
+  camera.update(&camera);
+  player.update(&player, &camera, lvl_arr, &lvl); // update changes player values
+  //update enemies
+  for (int i = 0; i < lvl.enem_count; i++) {
+    if(gumba[i].isSpawned && gumba[i].isAlive){
+      gumba[i].update(&gumba[i], lvl_arr, &lvl);
     }
+  }
+  bg1.update(&bg1);
+  bg2.update(&bg2);
+  //----------------------------------------------------------------------------
 
-
-      for (int i = camera.arrY; i >= 0  ; i--) {
-        for (int j = camera.arrX; j < camera.arrX+((SCREEN_WIDTH+(2*TILE_SIZE))/(TILE_SIZE)); j++) {
-          //printf("%c", lvl_arr[(i*lvl.width)+j]);
-
-          if (lvl_arr[(i*lvl.width)+j] == '#'){
-            doRender(rend, j*TILE_SIZE-camera.xPos, ((lvl.height-i)*TILE_SIZE), TILE_SIZE, TILE_SIZE, boden.texture);
-          }
-        }
+  // clear screen
+  SDL_RenderClear(rend);
+  doRender(rend, bg1.xPos, SCREEN_HEIGHT, SCREEN_WIDTH*2, SCREEN_HEIGHT, bgimage);
+  doRender(rend, bg2.xPos, SCREEN_HEIGHT, SCREEN_WIDTH*2, SCREEN_HEIGHT, bgimage);
+  // show players lives
+  for(int i = 0; i< player.lives;i++){
+    doRender(rend, (i)*TILE_SIZE,SCREEN_HEIGHT, TILE_SIZE, TILE_SIZE, player.texture);
+  }
+  for (int i = camera.arrY; i >= 0  ; i--) {
+    for (int j = camera.arrX; j < camera.arrX+((SCREEN_WIDTH+(2*TILE_SIZE))/(TILE_SIZE)); j++) {
+      if (lvl_arr[(i*lvl.width)+j] == '#'){
+        doRender(rend, j*TILE_SIZE-camera.xPos, ((lvl.height-i)*TILE_SIZE), TILE_SIZE, TILE_SIZE, boden.texture);
       }
+      if (lvl_arr[(i*lvl.width)+j] == 'G' && !gumba[gcount].isSpawned){
+        gumba[gcount].isSpawned = 1;
+        gumba[gcount].xPos = j*TILE_SIZE-camera.xPos;
+        gumba[gcount].yPos = (lvl.height-i)*TILE_SIZE;
+        if(gcount != lvl.enem_count)
+          gcount ++;
+      }
+    }
+  }
+  // draw Player
+  doRender(rend, player.xPos-camera.xPos,player.yPos, TILE_SIZE, TILE_SIZE, player.texture);
+  // draw enemies
+  for (int i = 0; i < lvl.enem_count; i++) {
+    if(gumba[i].isSpawned && gumba[i].isAlive)
+      doRender(rend, gumba[i].xPos-camera.xPos, gumba[i].yPos, TILE_SIZE, TILE_SIZE, gumba[i].texture);
+  }
+  //doRender(rend, gumba1.xPos-camera.xPos, gumba1.yPos, TILE_SIZE, TILE_SIZE, gumba1.texture);
 
-      doRender(rend, player.xPos-camera.xPos,player.yPos, TILE_SIZE, TILE_SIZE, player.texture);
-      doRender(rend, gumba1.xPos-camera.xPos, gumba1.yPos, TILE_SIZE, TILE_SIZE, gumba1.texture);
 
-    SDL_RenderPresent(rend);
-//------------------------------------------------------------------------------
+  SDL_RenderPresent(rend);
 
-     now = SDL_GetPerformanceCounter();
-     deltatime = (double)((now-last) / (double) SDL_GetPerformanceFrequency());
-  //   SDL_Delay(((1000)/60)-deltatime/((1000)/60));
-     SDL_Delay((1000-deltatime)/60);
-   }
+  // calculate deltatime to compensate lag
+  now = SDL_GetPerformanceCounter();
+  deltatime = (double)((now-last) / (double) SDL_GetPerformanceFrequency());
+  SDL_Delay((1000-deltatime)/60);
+} //----------------------------------------------------------------------------
     //SDL_DestroyTexture(game.gumba);
     //SDL_DestroyTexture(game.boden);
     free(lvl_arr);
+    free(gumba);
     SDL_DestroyRenderer(rend);
     SDL_DestroyWindow(win);
     SDL_Quit();
