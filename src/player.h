@@ -1,3 +1,4 @@
+#pragma once
 #include "gamewindow.h"
 #include "camera.h"
 

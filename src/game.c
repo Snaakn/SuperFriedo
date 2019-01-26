@@ -1,3 +1,6 @@
+#pragma once
+#include "stdio.h"
+#include "stdlib.h"
 #include "enemy.h"
 
 int spacenotpressed = 1;
@@ -39,27 +42,44 @@ int processEvent(SDL_Window *win, GameState *game) {
     }
     // Player move left
     if(state[SDL_SCANCODE_A]){
-      if (!x_collision(p->xPos, p->yPos, -4, l_a, l))
-        p->xPos -= 4;
+      if (!x_collision(p->xPos, p->yPos, -4*GAMESPEED, l_a, l))
+        p->xPos -= 4*GAMESPEED;
     }
     // Player move right
     if(state[SDL_SCANCODE_D]){
-      if (!x_collision(p->xPos, p->yPos, 4, l_a, l)){
+      if (!x_collision(p->xPos, p->yPos, 4*GAMESPEED, l_a, l)){
         if (p->xPos >=c->xPos+SCREEN_WIDTH/2){
-          c->xPos += 4;
-          b1->xPos -= 3;
-          b2->xPos -= 3;
+          c->xPos += 4*GAMESPEED;
+          b1->xPos -= 3*GAMESPEED;
+          b2->xPos -= 3*GAMESPEED;
         }
-        p->xPos += 4;
+        p->xPos += 4*GAMESPEED;
       }
     }
   }
 
 //-------------------------------------------------------------------------
 
+int pg_collision(struct Player *p, struct Enemy *g){
+    // if player x-coord = enemy x-coord
+    if ((p->xPos + TILE_SIZE >= g->xPos && p->xPos <= g->xPos + TILE_SIZE) || (p->xPos <= g->xPos + TILE_SIZE && p->xPos+TILE_SIZE >= g->xPos+TILE_SIZE)) {
+      // if player is on top -> enemy dead
+      if(p->yPos - TILE_SIZE < g->yPos && p->yPos > g->yPos+TILE_SIZE/2 && p->dY <= 0){
+        g->isAlive = 0;
+        return 2;
+      } else if ((p->yPos - TILE_SIZE <= g->yPos-TILE_SIZE/2 && p->yPos >= g->yPos) || (p->yPos - TILE_SIZE <=  g->yPos-TILE_SIZE && p->yPos >= g->yPos-TILE_SIZE/2)){
+          p->yPos = -10;
+      }
+    }
+
+      // if player is on same floor level-> player dead
+
+  return 0;
+}
+
 int x_collision(int x, int y, int x_dir, char *lvl_arr, struct Level *l){
-  int next_X = (int)((x+x_dir+4)/TILE_SIZE);
-  int next_X2 = (int)((x+x_dir+40)/TILE_SIZE);
+  int next_X = (int)((x+x_dir+2*TILE_SIZE/10)/TILE_SIZE);
+  int next_X2 = (int)((x+x_dir+(8*TILE_SIZE/10))/TILE_SIZE);
   int next_Y = ((l->height-1)-(int)((y-TILE_SIZE)/TILE_SIZE));
 
   if ((lvl_arr[next_Y*(l->width)+next_X] == '#') || (lvl_arr[next_Y*(l->width)+next_X2] == '#')) {
@@ -71,8 +91,8 @@ int x_collision(int x, int y, int x_dir, char *lvl_arr, struct Level *l){
 }
 
 int collision(int x, int y, int x_dir, int y_dir, char *lvl_arr, struct Level *l){
-  int next_X = (int)((x+x_dir+4)/TILE_SIZE);
-  int next_X2 = (int)((x+x_dir+40)/TILE_SIZE);
+  int next_X = (int)((x+x_dir+2*TILE_SIZE/10)/TILE_SIZE);
+  int next_X2 = (int)((x+x_dir+(8*TILE_SIZE/10))/TILE_SIZE);
   int next_Y = ((l->height-1)-(int)((y+y_dir-TILE_SIZE)/TILE_SIZE));
   int next_Y2 = ((l->height-1)-(int)((y+y_dir-(TILE_SIZE/4))/TILE_SIZE));
 
@@ -102,19 +122,24 @@ int main(int argc, char *argv[])
 // create a renderer, which sets up the graphics hardware
   Uint32 render_flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
   SDL_Renderer* rend = SDL_CreateRenderer(win, -1, render_flags);
-
   SDL_Surface *s_gumba = IMG_Load("Images/gumba.png");
   SDL_Surface *s_block = IMG_Load("Images/block.png");
   SDL_Surface *s_coin = IMG_Load("Images/coin.png");
-  SDL_Surface *s_player = IMG_Load("Images/gumba.png");
-  SDL_Surface *s_backgroud = IMG_Load("Images/background.png");
+  SDL_Surface *s_player = IMG_Load("Images/friedolin.png");
+  SDL_Surface *s_background = IMG_Load("Images/background.png");
 
   // create Textures from surfaces
   SDL_Texture *gumba_texture = SDL_CreateTextureFromSurface(rend, s_gumba);
   SDL_Texture *block_texture = SDL_CreateTextureFromSurface(rend, s_block);
   SDL_Texture *coin_texture = SDL_CreateTextureFromSurface(rend, s_coin);
   SDL_Texture *player_texture = SDL_CreateTextureFromSurface(rend, s_player);
-  SDL_Texture *bg_texture = SDL_CreateTextureFromSurface(rend, s_backgroud);
+  SDL_Texture *bg_texture = SDL_CreateTextureFromSurface(rend, s_background);
+
+  SDL_FreeSurface(s_player);
+  SDL_FreeSurface(s_gumba);
+  SDL_FreeSurface(s_block);
+  SDL_FreeSurface(s_coin);
+  SDL_FreeSurface(s_background);
 
 //---UI-------------------------------
 //------------------------------------
@@ -131,11 +156,11 @@ load_level(lvl_arr,&lvl);
 /************************CREATE ENTITIES*******************************/
 //--------------- Philipps player struktur:----------------------
 // the structure contains function pointers to update function or later walk and jump
-struct Player player = {/*score*/0,/*lives*/3,/*xpos*/300, /*ypos*/144,/*dY*/0,/*canjump*/1, player_update,player_jump, player_texture};
+struct Player player = {/*score*/0,/*lives*/3,/*xpos*/TILE_SIZE, /*ypos*/2*TILE_SIZE,/*dY*/0,/*canjump*/1, player_update,player_jump, player_texture};
 // create an instance of type player: {lives, xPos, yPos, update-function-to-point-to}
 
 //-----------------Create enemies--------------------------------
-struct Enemy *gumba = calloc(lvl.enem_count, sizeof(struct Enemy));
+struct Enemy *gumba = malloc(lvl.enem_count * sizeof(struct Enemy));
 int gcount = 0;
 struct Enemy prototype = {1,0,-2,0,0,0, enemy_update, gumba_texture};
 for (int i = 0; i < lvl.enem_count; i++) {
@@ -162,6 +187,7 @@ while(!game.done){
   //update enemies
   for (int i = 0; i < lvl.enem_count; i++) {
     if(gumba[i].isSpawned && gumba[i].isAlive){
+      pg_collision(&player,&gumba[i]);
       gumba[i].update(&gumba[i], lvl_arr, &lvl);
     }
   }
@@ -183,46 +209,43 @@ while(!game.done){
         doRender(rend, j*TILE_SIZE-camera.xPos, ((lvl.height-i)*TILE_SIZE), TILE_SIZE, TILE_SIZE, boden.texture);
       }
       if (lvl_arr[(i*lvl.width)+j] == 'G' && !gumba[gcount].isSpawned){
+        lvl_arr[(i*lvl.width)+j] = '-';
         gumba[gcount].isSpawned = 1;
-        gumba[gcount].xPos = j*TILE_SIZE-camera.xPos;
+        gumba[gcount].isAlive = 1;
+        gumba[gcount].xPos = j*TILE_SIZE;
         gumba[gcount].yPos = (lvl.height-i)*TILE_SIZE;
-        if(gcount != lvl.enem_count)
+        if(gcount < lvl.enem_count-1)
           gcount ++;
       }
       if (lvl_arr[(i*lvl.width)+j] == 'C'){
         doRender(rend, j*TILE_SIZE-camera.xPos, ((lvl.height-i)*TILE_SIZE), TILE_SIZE, TILE_SIZE, coin_texture);
       }
 
+      for (int i = 0; i < lvl.enem_count; i++) {
+        if(gumba[i].isSpawned && gumba[i].isAlive)
+          doRender(rend, gumba[i].xPos-camera.xPos, gumba[i].yPos, TILE_SIZE, TILE_SIZE, gumba[i].texture);
+      }
     }
   }
   // draw Player
   doRender(rend, player.xPos-camera.xPos,player.yPos, TILE_SIZE, TILE_SIZE, player.texture);
   // draw enemies
-  for (int i = 0; i < lvl.enem_count; i++) {
-    if(gumba[i].isSpawned && gumba[i].isAlive)
-      doRender(rend, gumba[i].xPos-camera.xPos, gumba[i].yPos, TILE_SIZE, TILE_SIZE, gumba[i].texture);
-  }
 
   SDL_RenderPresent(rend);
 
   // calculate deltatime to compensate lag
   now = SDL_GetPerformanceCounter();
   deltatime = (double)((now-last) / (double) SDL_GetPerformanceFrequency());
-  SDL_Delay((1000-deltatime)/60);
+  SDL_Delay((1000/60)-deltatime);
 } //----------------------------------------------------------------------------
 
     SDL_DestroyTexture(player_texture);
     SDL_DestroyTexture(gumba_texture);
     SDL_DestroyTexture(block_texture);
     SDL_DestroyTexture(coin_texture);
-
-    SDL_FreeSurface(s_player);
-    SDL_FreeSurface(s_gumba);
-    SDL_FreeSurface(s_block);
-    SDL_FreeSurface(s_coin);
+    SDL_DestroyTexture(bg_texture);
 
     free(lvl_arr);
-    free(gumba);
     SDL_DestroyRenderer(rend);
     SDL_DestroyWindow(win);
     SDL_Quit();

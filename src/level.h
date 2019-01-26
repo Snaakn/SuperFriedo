@@ -1,6 +1,3 @@
-#include "stdio.h"
-#include "stdlib.h"
-
 struct Level{
   int width;
   int height;

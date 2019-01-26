@@ -15,8 +15,8 @@ void player_update(struct Player *self, struct Cam *camera, char *lvl_arr, struc
       printf("One life lost\n");
     }
 
-    if (self->dY > -8)
-      self->dY -= 2;
+    if (self->dY > -8*GAMESPEED)
+      self->dY -= 2*GAMESPEED;
       // gravity
     if (!collision(self->xPos, self->yPos, 0, self->dY, lvl_arr, level)){
       self->canjump = 0;
@@ -30,7 +30,7 @@ void player_update(struct Player *self, struct Cam *camera, char *lvl_arr, struc
 
 void player_jump(struct Player *self){
   if(self->canjump){
-    self->dY =25;
+    self->dY =26*GAMESPEED;
     self->canjump=0;
   }
 }

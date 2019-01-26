@@ -1,3 +1,5 @@
+#pragma once
+#include "stdio.h"
 #include "level.h"
 
 void prepare_level(struct Level *level){

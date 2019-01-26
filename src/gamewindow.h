@@ -4,10 +4,11 @@
 #include "game.h"
 
 #define SCREEN_NAME "Super Friedolin Go Pikachu(TM)"
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 600
-#define SCREEN_SCALE 0
-#define TILE_SIZE 48
+#define SCREEN_WIDTH 1920
+#define SCREEN_HEIGHT 1080
+#define SCREEN_SCALE 1
+#define TILE_SIZE 100
+#define GAMESPEED (TILE_SIZE/50)
 
 
 struct Background{
