@@ -91,8 +91,8 @@ int main(int argc, char *argv[])
 {
   GameState game;
   game.done = 0;
-  // SDL_Surface *bodenSurface = NULL;
-  // SDL_Surface *gumbaSurface = NULL;
+
+
 
   SDL_Window* win = SDL_CreateWindow(SCREEN_NAME,
                                      SDL_WINDOWPOS_CENTERED,
@@ -103,15 +103,24 @@ int main(int argc, char *argv[])
   Uint32 render_flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
   SDL_Renderer* rend = SDL_CreateRenderer(win, -1, render_flags);
 
+  SDL_Surface *s_gumba = IMG_Load("Images/gumba.png");
+  SDL_Surface *s_block = IMG_Load("Images/block.png");
+  SDL_Surface *s_coin = IMG_Load("Images/coin.png");
+  SDL_Surface *s_player = IMG_Load("Images/gumba.png");
+  SDL_Surface *s_backgroud = IMG_Load("Images/background.png");
 
+  // create Textures from surfaces
+  SDL_Texture *gumba_texture = SDL_CreateTextureFromSurface(rend, s_gumba);
+  SDL_Texture *block_texture = SDL_CreateTextureFromSurface(rend, s_block);
+  SDL_Texture *coin_texture = SDL_CreateTextureFromSurface(rend, s_coin);
+  SDL_Texture *player_texture = SDL_CreateTextureFromSurface(rend, s_player);
+  SDL_Texture *bg_texture = SDL_CreateTextureFromSurface(rend, s_backgroud);
 
 //---UI-------------------------------
-SDL_Texture *lives_image = SDL_CreateTextureFromSurface(rend, IMG_Load("Images/lives.png"));
 //------------------------------------
 
 struct Background bg1 = {0, background_update};
 struct Background bg2 = {SCREEN_WIDTH*2, background_update};
-SDL_Texture *bgimage = SDL_CreateTextureFromSurface(rend, IMG_Load("Images/background.png"));
 
 // create level arrays and load level file
 static struct Level lvl;
@@ -122,19 +131,19 @@ load_level(lvl_arr,&lvl);
 /************************CREATE ENTITIES*******************************/
 //--------------- Philipps player struktur:----------------------
 // the structure contains function pointers to update function or later walk and jump
-struct Player player = {3,300, 144,0,1, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
+struct Player player = {/*score*/0,/*lives*/3,/*xpos*/300, /*ypos*/144,/*dY*/0,/*canjump*/1, player_update,player_jump, player_texture};
 // create an instance of type player: {lives, xPos, yPos, update-function-to-point-to}
 
 //-----------------Create enemies--------------------------------
 struct Enemy *gumba = calloc(lvl.enem_count, sizeof(struct Enemy));
 int gcount = 0;
-struct Enemy prototype = {1,0,-2,0,0,0, enemy_update, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
+struct Enemy prototype = {1,0,-2,0,0,0, enemy_update, gumba_texture};
 for (int i = 0; i < lvl.enem_count; i++) {
   gumba[i] = prototype;
 }
 
 // TODO make a Block struct I will use player struct for now
-struct Player boden = {0,96,96,0,0, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/boden.png"))};
+struct Player boden = {0,0,96,96,0,0, player_update,player_jump, block_texture};
 struct Cam camera = {0,(lvl.height-1)*TILE_SIZE,0,lvl.height,0, cam_update};
 /***********************************************************************/
 int now, last;
@@ -162,8 +171,8 @@ while(!game.done){
 
   // clear screen
   SDL_RenderClear(rend);
-  doRender(rend, bg1.xPos, SCREEN_HEIGHT, SCREEN_WIDTH*2, SCREEN_HEIGHT, bgimage);
-  doRender(rend, bg2.xPos, SCREEN_HEIGHT, SCREEN_WIDTH*2, SCREEN_HEIGHT, bgimage);
+  doRender(rend, bg1.xPos, SCREEN_HEIGHT, SCREEN_WIDTH*2, SCREEN_HEIGHT, bg_texture);
+  doRender(rend, bg2.xPos, SCREEN_HEIGHT, SCREEN_WIDTH*2, SCREEN_HEIGHT, bg_texture);
   // show players lives
   for(int i = 0; i< player.lives;i++){
     doRender(rend, (i)*TILE_SIZE,SCREEN_HEIGHT, TILE_SIZE, TILE_SIZE, player.texture);
@@ -180,6 +189,10 @@ while(!game.done){
         if(gcount != lvl.enem_count)
           gcount ++;
       }
+      if (lvl_arr[(i*lvl.width)+j] == 'C'){
+        doRender(rend, j*TILE_SIZE-camera.xPos, ((lvl.height-i)*TILE_SIZE), TILE_SIZE, TILE_SIZE, coin_texture);
+      }
+
     }
   }
   // draw Player
@@ -189,8 +202,6 @@ while(!game.done){
     if(gumba[i].isSpawned && gumba[i].isAlive)
       doRender(rend, gumba[i].xPos-camera.xPos, gumba[i].yPos, TILE_SIZE, TILE_SIZE, gumba[i].texture);
   }
-  //doRender(rend, gumba1.xPos-camera.xPos, gumba1.yPos, TILE_SIZE, TILE_SIZE, gumba1.texture);
-
 
   SDL_RenderPresent(rend);
 
@@ -199,8 +210,17 @@ while(!game.done){
   deltatime = (double)((now-last) / (double) SDL_GetPerformanceFrequency());
   SDL_Delay((1000-deltatime)/60);
 } //----------------------------------------------------------------------------
-    //SDL_DestroyTexture(game.gumba);
-    //SDL_DestroyTexture(game.boden);
+
+    SDL_DestroyTexture(player_texture);
+    SDL_DestroyTexture(gumba_texture);
+    SDL_DestroyTexture(block_texture);
+    SDL_DestroyTexture(coin_texture);
+
+    SDL_FreeSurface(s_player);
+    SDL_FreeSurface(s_gumba);
+    SDL_FreeSurface(s_block);
+    SDL_FreeSurface(s_coin);
+
     free(lvl_arr);
     free(gumba);
     SDL_DestroyRenderer(rend);
