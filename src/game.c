@@ -122,7 +122,7 @@ load_level(lvl_arr,&lvl);
 /************************CREATE ENTITIES*******************************/
 //--------------- Philipps player struktur:----------------------
 // the structure contains function pointers to update function or later walk and jump
-struct Player player = {3,300, 144,0,1, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
+struct Player player = {/*score*/0,/*lives*/3,/*xpos*/300, /*ypos*/144,/*dY*/0,/*canjump*/1, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/gumba.png"))};
 // create an instance of type player: {lives, xPos, yPos, update-function-to-point-to}
 
 //-----------------Create enemies--------------------------------
@@ -132,9 +132,11 @@ struct Enemy prototype = {1,0,-2,0,0,0, enemy_update, SDL_CreateTextureFromSurfa
 for (int i = 0; i < lvl.enem_count; i++) {
   gumba[i] = prototype;
 }
+//struct Coin coin;
+SDL_Texture *cointexture = SDL_CreateTextureFromSurface(rend, IMG_Load("Images/coin.png"));
 
 // TODO make a Block struct I will use player struct for now
-struct Player boden = {0,96,96,0,0, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/boden.png"))};
+struct Player boden = {0,0,96,96,0,0, player_update,player_jump, SDL_CreateTextureFromSurface(rend, IMG_Load("Images/boden.png"))};
 struct Cam camera = {0,(lvl.height-1)*TILE_SIZE,0,lvl.height,0, cam_update};
 /***********************************************************************/
 int now, last;
@@ -180,6 +182,10 @@ while(!game.done){
         if(gcount != lvl.enem_count)
           gcount ++;
       }
+      if (lvl_arr[(i*lvl.width)+j] == 'C'){
+        doRender(rend, j*TILE_SIZE-camera.xPos, ((lvl.height-i)*TILE_SIZE), TILE_SIZE, TILE_SIZE, cointexture);
+      }
+
     }
   }
   // draw Player
@@ -189,8 +195,6 @@ while(!game.done){
     if(gumba[i].isSpawned && gumba[i].isAlive)
       doRender(rend, gumba[i].xPos-camera.xPos, gumba[i].yPos, TILE_SIZE, TILE_SIZE, gumba[i].texture);
   }
-  //doRender(rend, gumba1.xPos-camera.xPos, gumba1.yPos, TILE_SIZE, TILE_SIZE, gumba1.texture);
-
 
   SDL_RenderPresent(rend);
 

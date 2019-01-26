@@ -3,6 +3,7 @@
 
 // player struct
 struct Player{
+  int score;
   int lives;
   int xPos;
   int yPos;
