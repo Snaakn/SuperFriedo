@@ -12,6 +12,7 @@ void prepare_level(struct Level *level){
   int longest = 0; // finds the number of chars of the longest line
   int lines = 0; // holds the number of lines
   int enems = 0;
+  int coins = 0;
   printf("reading file\n");
   while ((sgch = fgetc(file)) != EOF){
     chars++;
@@ -23,15 +24,19 @@ void prepare_level(struct Level *level){
       }
       chars = 0;
     }
-    if (sgch == 'G'){
-      enems++;
-    }
+    if (sgch == 'G')
+    	enems++;
+ 	if (sgch == 'C')
+		coins++;
+
+
   }
   // now that we have the dimensions of the level
   // we can dynamically allocate an array to hold it
   level->enem_count = enems;
   level->width = longest;
   level->height = lines;
+  level->coin_count = coins;
   fclose(file);
   //printf("level prepared\n");
   }

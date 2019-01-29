@@ -21,8 +21,8 @@ unix: src/gamewindow.h src/player.h gamewindow.o player.o level.o camera.o enemy
 	-rm *.o
 	./game
 
-win: src/gamewindow.h src/player.h gamewindow.o player.o level.o camera.o
-	gcc -o game gamewindow.o player.o level.o camera.o src/game.c -lmingw32 $(SDLFLAGS)
+win: src/gamewindow.h src/player.h gamewindow.o player.o level.o camera.o enemy.o
+	gcc -o game gamewindow.o player.o level.o camera.o enemy.o src/game.c -lmingw32 $(SDLFLAGS)
 	del *.o
 	del *.ghc
 	./game.exe

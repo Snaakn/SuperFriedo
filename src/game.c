@@ -2,6 +2,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "enemy.h"
+#include "coin.h"
 
 int spacenotpressed = 1;
 
@@ -59,6 +60,25 @@ int processEvent(SDL_Window *win, GameState *game) {
   }
 
 //-------------------------------------------------------------------------
+int coin_collect(struct Player *p, struct Coin *c){
+	int p_w = p->xPos + TILE_SIZE;
+	int p_h = p->yPos - TILE_SIZE;
+	int c_w = c->xPos + TILE_SIZE;
+	int c_h = c->yPos - TILE_SIZE;
+	//printf("%d, %d, %d, %d\n", p_h, c_h, p_w, c_w);
+
+	// if X intersect
+	if ((p_w >= c->xPos && p->xPos <= c->xPos) || (p->xPos <= c_w && p_w >= c_w)) {
+		// and Y intersect
+		if ((p_h < c->yPos && p->yPos > c->yPos) || (p->yPos > c_h && p_h < c_h)){
+			// collect coin
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
 
 int pg_collision(struct Player *p, struct Enemy *g){
     // if player x-coord = enemy x-coord
@@ -166,6 +186,26 @@ struct Enemy prototype = {1,0,-2,0,0,0, enemy_update, gumba_texture};
 for (int i = 0; i < lvl.enem_count; i++) {
   gumba[i] = prototype;
 }
+//-------------------Make Coins-------------------------------------
+struct Coin *coins = malloc(lvl.coin_count * sizeof(struct Coin));
+int ccount = 0;
+struct Coin proto = {-1,-1,0};
+for (int i = 0; i < lvl.coin_count; i++) {
+  coins[i] = proto;
+}
+for (int i = lvl.height; i >= 0  ; i--) {
+  for (int j = 0; j < lvl.width; j++){
+
+	if (lvl_arr[(i*lvl.width)+j] == 'C' && !coins[ccount].isCollected){
+	  //lvl_arr[(i*lvl.width)+j] = '-';
+	  coins[ccount].xPos = j*TILE_SIZE;
+	  coins[ccount].yPos = (lvl.height-i)*TILE_SIZE;
+
+	  if(ccount < lvl.coin_count-1)
+		ccount ++;
+	}
+  }
+}
 
 // TODO make a Block struct I will use player struct for now
 struct Player boden = {0,0,96,96,0,0, player_update,player_jump, block_texture};
@@ -191,6 +231,17 @@ while(!game.done){
       gumba[i].update(&gumba[i], lvl_arr, &lvl);
     }
   }
+  // Check if coins are collected
+  //printf("%d, %d\n", coins[0].yPos, player.yPos);
+//printf("%d\n", player.score);
+  for (int i = 0; i < lvl.coin_count; i++) {
+	if(!coins[i].isCollected && coin_collect(&player, &coins[i])){
+		coins[i].isCollected = 1;
+		player.score +=10;
+		printf("Coin collected\n");
+	}
+  }
+
   bg1.update(&bg1);
   bg2.update(&bg2);
   //----------------------------------------------------------------------------
@@ -217,9 +268,6 @@ while(!game.done){
         if(gcount < lvl.enem_count-1)
           gcount ++;
       }
-      if (lvl_arr[(i*lvl.width)+j] == 'C'){
-        doRender(rend, j*TILE_SIZE-camera.xPos, ((lvl.height-i)*TILE_SIZE), TILE_SIZE, TILE_SIZE, coin_texture);
-      }
 
       for (int i = 0; i < lvl.enem_count; i++) {
         if(gumba[i].isSpawned && gumba[i].isAlive)
@@ -227,6 +275,12 @@ while(!game.done){
       }
     }
   }
+
+  for (int i = 0; i < lvl.coin_count; i++) {
+	  if (!coins[i].isCollected)
+		doRender(rend, coins[i].xPos-camera.xPos, coins[i].yPos, TILE_SIZE, TILE_SIZE, coin_texture);
+  }
+
   // draw Player
   doRender(rend, player.xPos-camera.xPos,player.yPos, TILE_SIZE, TILE_SIZE, player.texture);
   // draw enemies
