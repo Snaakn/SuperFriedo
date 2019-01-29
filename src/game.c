@@ -23,6 +23,18 @@ int processEvent(SDL_Window *win, GameState *game) {
   return game->done;
 }
 
+void winning(SDL_Renderer *rend, SDL_Texture *texture, GameState *game){
+	printf("Gewonnen!\n");
+	for(int i = 0; i < SCREEN_WIDTH; i+=6*GAMESPEED){
+		SDL_RenderClear(rend);
+		doRender(rend, i, SCREEN_HEIGHT, SCREEN_HEIGHT, SCREEN_HEIGHT, texture);
+		SDL_RenderPresent(rend);
+	}
+	game->done = 1;
+	return;
+
+}
+
   void getInput(GameState *game, struct Player *p, struct Cam *c, char *l_a, struct Level *l, struct Background *b1, struct Background *b2){
 
     const Uint8 *state = SDL_GetKeyboardState(NULL);
@@ -86,6 +98,7 @@ int pg_collision(struct Player *p, struct Enemy *g){
       // if player is on top -> enemy dead
       if(p->yPos - TILE_SIZE < g->yPos && p->yPos > g->yPos+TILE_SIZE/2 && p->dY <= 0){
         g->isAlive = 0;
+		p->score+=10;
         return 2;
       } else if ((p->yPos - TILE_SIZE <= g->yPos-TILE_SIZE/2 && p->yPos >= g->yPos) || (p->yPos - TILE_SIZE <=  g->yPos-TILE_SIZE && p->yPos >= g->yPos-TILE_SIZE/2)){
           p->yPos = -10;
@@ -147,6 +160,8 @@ int main(int argc, char *argv[])
   SDL_Surface *s_coin = IMG_Load("Images/coin.png");
   SDL_Surface *s_player = IMG_Load("Images/friedolin.png");
   SDL_Surface *s_background = IMG_Load("Images/background.png");
+  SDL_Surface *s_flag = IMG_Load("Images/flag.png");
+
 
   // create Textures from surfaces
   SDL_Texture *gumba_texture = SDL_CreateTextureFromSurface(rend, s_gumba);
@@ -154,12 +169,14 @@ int main(int argc, char *argv[])
   SDL_Texture *coin_texture = SDL_CreateTextureFromSurface(rend, s_coin);
   SDL_Texture *player_texture = SDL_CreateTextureFromSurface(rend, s_player);
   SDL_Texture *bg_texture = SDL_CreateTextureFromSurface(rend, s_background);
+  SDL_Texture *flag_texture = SDL_CreateTextureFromSurface(rend, s_flag);
 
   SDL_FreeSurface(s_player);
   SDL_FreeSurface(s_gumba);
   SDL_FreeSurface(s_block);
   SDL_FreeSurface(s_coin);
   SDL_FreeSurface(s_background);
+
 
 //---UI-------------------------------
 //------------------------------------
@@ -244,12 +261,14 @@ while(!game.done){
 
   bg1.update(&bg1);
   bg2.update(&bg2);
+
   //----------------------------------------------------------------------------
 
   // clear screen
   SDL_RenderClear(rend);
   doRender(rend, bg1.xPos, SCREEN_HEIGHT, SCREEN_WIDTH*2, SCREEN_HEIGHT, bg_texture);
   doRender(rend, bg2.xPos, SCREEN_HEIGHT, SCREEN_WIDTH*2, SCREEN_HEIGHT, bg_texture);
+
   // show players lives
   for(int i = 0; i< player.lives;i++){
     doRender(rend, (i)*TILE_SIZE,SCREEN_HEIGHT, TILE_SIZE, TILE_SIZE, player.texture);
@@ -258,6 +277,11 @@ while(!game.done){
     for (int j = camera.arrX; j < camera.arrX+((SCREEN_WIDTH+(2*TILE_SIZE))/(TILE_SIZE)); j++) {
       if (lvl_arr[(i*lvl.width)+j] == '#'){
         doRender(rend, j*TILE_SIZE-camera.xPos, ((lvl.height-i)*TILE_SIZE), TILE_SIZE, TILE_SIZE, boden.texture);
+      }
+	  if (lvl_arr[(i*lvl.width)+j] == 'F'){
+        doRender(rend, j*TILE_SIZE-camera.xPos, SCREEN_HEIGHT-TILE_SIZE, TILE_SIZE, SCREEN_HEIGHT-TILE_SIZE, flag_texture);
+		if (player.xPos >= j*TILE_SIZE)
+			winning(rend, player_texture, &game);
       }
       if (lvl_arr[(i*lvl.width)+j] == 'G' && !gumba[gcount].isSpawned){
         lvl_arr[(i*lvl.width)+j] = '-';
@@ -284,7 +308,6 @@ while(!game.done){
   // draw Player
   doRender(rend, player.xPos-camera.xPos,player.yPos, TILE_SIZE, TILE_SIZE, player.texture);
   // draw enemies
-
   SDL_RenderPresent(rend);
 
   // calculate deltatime to compensate lag
@@ -302,6 +325,8 @@ while(!game.done){
     free(lvl_arr);
     SDL_DestroyRenderer(rend);
     SDL_DestroyWindow(win);
+	printf("Score: %d\n", player.score);
+	SDL_Delay(3000);
     SDL_Quit();
 
     return 0;
