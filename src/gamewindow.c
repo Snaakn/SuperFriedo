@@ -31,6 +31,6 @@ void doRender(SDL_Renderer *rend, int x, int y, int width, int height, SDL_Textu
   //a->y += a ->dy;
 //}
 void background_update(struct Background *self){
-  if (self->xPos <= (-2*SCREEN_WIDTH))
-    self->xPos = SCREEN_WIDTH;
+  if (self->xPos <= (-2)*SCREEN_WIDTH)
+    self->xPos = 3*SCREEN_WIDTH+self->xPos;
 }
