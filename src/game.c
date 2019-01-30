@@ -73,16 +73,16 @@ void winning(SDL_Renderer *rend, SDL_Texture *texture, GameState *game){
 
 //-------------------------------------------------------------------------
 int coin_collect(struct Player *p, struct Coin *c){
-	int p_w = p->xPos + TILE_SIZE;
+	int p_w = p->xPos + (8*TILE_SIZE/10);
 	int p_h = p->yPos - TILE_SIZE;
-	int c_w = c->xPos + TILE_SIZE;
+	int c_w = c->xPos + (8*TILE_SIZE/10);
 	int c_h = c->yPos - TILE_SIZE;
 	//printf("%d, %d, %d, %d\n", p_h, c_h, p_w, c_w);
 
 	// if X intersect
-	if ((p_w >= c->xPos && p->xPos <= c->xPos) || (p->xPos <= c_w && p_w >= c_w)) {
+	if ((p_w >= c->xPos+(2*TILE_SIZE/10) && p->xPos <= c->xPos) || (p->xPos+(2*TILE_SIZE/10) <= c_w && p_w >= c_w)) {
 		// and Y intersect
-		if ((p_h < c->yPos && p->yPos > c->yPos) || (p->yPos > c_h && p_h < c_h)){
+		if ((p_h <= c->yPos && p->yPos >= c->yPos) || (p->yPos >= c_h && p_h <= c_h)){
 			// collect coin
 			return 1;
 		}
@@ -94,7 +94,8 @@ int coin_collect(struct Player *p, struct Coin *c){
 
 int pg_collision(struct Player *p, struct Enemy *g){
     // if player x-coord = enemy x-coord
-    if ((p->xPos + TILE_SIZE >= g->xPos && p->xPos <= g->xPos + TILE_SIZE) || (p->xPos <= g->xPos + TILE_SIZE && p->xPos+TILE_SIZE >= g->xPos+TILE_SIZE)) {
+    // +2*TILE_SIZE/10 = "KNAUTSCHZONE"
+    if ((p->xPos + (8*TILE_SIZE/10) >= g->xPos && p->xPos <= g->xPos + (8*TILE_SIZE/10)) || (p->xPos <= g->xPos + (8*TILE_SIZE/10) && p->xPos+(8*TILE_SIZE/10) >= g->xPos+(8*TILE_SIZE/10))) {
       // if player is on top -> enemy dead
       if(p->yPos - TILE_SIZE < g->yPos && p->yPos > g->yPos+TILE_SIZE/2 && p->dY <= 0){
         g->isAlive = 0;
