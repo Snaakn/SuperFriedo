@@ -161,8 +161,16 @@ int main(int argc, char *argv[])
   SDL_Surface *s_player = IMG_Load("Images/friedolin.png");
   SDL_Surface *s_background = IMG_Load("Images/background.png");
   SDL_Surface *s_flag = IMG_Load("Images/flag.png");
-
-
+  if (s_player == NULL)
+  printf("No player image found\n");
+  if (s_gumba == NULL)
+    printf("No enemy image found\n");
+  if (s_block == NULL)
+    printf("No block image found\n");
+  if (s_background == NULL)
+    printf("No background image found\n");
+  if (s_flag == NULL)
+    printf("No flag image found\n");
   // create Textures from surfaces
   SDL_Texture *gumba_texture = SDL_CreateTextureFromSurface(rend, s_gumba);
   SDL_Texture *block_texture = SDL_CreateTextureFromSurface(rend, s_block);
@@ -323,6 +331,7 @@ while(!game.done){
     SDL_DestroyTexture(bg_texture);
 
     free(lvl_arr);
+    free(coins);
     SDL_DestroyRenderer(rend);
     SDL_DestroyWindow(win);
 	printf("Score: %d\n", player.score);
