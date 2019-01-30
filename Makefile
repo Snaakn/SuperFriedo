@@ -1,5 +1,5 @@
 CC = gcc
-SDLFLAGS = -lSDL2main -lSDL2 -lSDL2_image -lSDL_ttf
+SDLFLAGS = -lSDL2main -lSDL2 -lSDL2_image #-lSDL_ttf
 
 enemy.o: src/enemy.c
 	gcc -c src/enemy.c
