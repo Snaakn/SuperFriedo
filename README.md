@@ -13,5 +13,5 @@ Simple Mario clone done with SDL2 and SDL_Image2
 
 ##### What I learned:
 * Getting into external libraries, especially SDL
-* Pointer madness (Function pointers with structs since I wanted to have them where they belonged to)
+* Pointer madness (i.e. Function pointers with structs since I wanted to have them where they belonged to)
 * Managing a medium size project
