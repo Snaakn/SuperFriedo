@@ -1,8 +1,7 @@
 # SuperFriedo
-## Super Friedolin! Das Game of the Year 2019
+## Super Friedolin!
 
-Zur grafischen Darstellung wird SDL2 und SDL_Image2 verwendet SDL_ttf ist eingebunden aber wird nicht verwendet, Installation 
-
+Simple Mario clone done with SDL2 and SDL_Image2
 
 ## make
 ##### linux/macOS <br/>
@@ -11,3 +10,8 @@ Zur grafischen Darstellung wird SDL2 und SDL_Image2 verwendet SDL_ttf ist eingeb
 
 ##### win <br/>
 ```mingw32-make win```
+
+##### What I learned:
+* Getting into external libraries, especially SDL
+* Pointer madness (Function pointers with structs since I wanted to have them where they belonged to)
+* Managing a medium size project
